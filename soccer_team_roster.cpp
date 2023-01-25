@@ -7,21 +7,29 @@
 #include <algorithm>
 using namespace std;
 
+    vector<int> ratings;
+    vector<int> jersey_numbers;
 
+    vector<int> get_ratings(vector<int> ratings){
+        return ratings;
+    }
+    vector<int> get_jersey_numbers(vector<int> jersey_numbers){
+        return jersey_numbers;
+    }
 
-    void add_player(vector<int> new_rating, vector<int> new_jersey){
+    void add_player(){
         int num;
         int rating;
         cout << "Enter a new player's jersey number:" << endl;
         cin >> num;
-        new_jersey.push_back(num);
+        jersey_numbers.push_back(num);
         cout << "Enter the player's rating:" << endl;
         cin >> rating;
-        new_rating.push_back(rating);
+        ratings.push_back(rating);
 
     return;
     }
-    void output_roster(vector<int> ratings, vector<int> jersey_numbers){
+    void output_roster(){
         cout << "ROSTER" << endl;
         int j = 0;
         for(int i = 0; i < jersey_numbers.size(); i++){
@@ -30,25 +38,25 @@ using namespace std;
         }
         return;
     }
-    void remove_player(vector<int> ratings, vector<int> jersey_numbers){
+    void remove_player(){
         int match;
         int index = 0;
         vector<int>::iterator it;
         cout << "Enter a jersey number:" << endl;
         cin >> match;
         for(int i = 0; i < ratings.size(); i++){
-            cout << ratings[i] << endl;
             if(match == jersey_numbers[i]){
                 index = i;
-                cout<<"hello" << endl;
                 ratings.erase(ratings.begin()+index);
                 jersey_numbers.erase(jersey_numbers.begin()+index);
             }
-        }
+         }
+        output_roster();
+
         return;
 
     }
-    void update_rating(vector<int> ratings, vector<int> jersey_numbers){
+    void update_rating(){
         int jersey;
         int rating;
         int index;
@@ -68,15 +76,16 @@ using namespace std;
     }
     }
 
-    void above_rating(vector<int> ratings, vector<int> jersey_numbers){
+    void above_rating(){
         int input;
         int j = 0;
         cout << "Enter a rating:" << endl;
         cin >> input;
+        cout << "ABOVE " << input << endl;
+
         for(int i = 0; i < ratings.size(); i++){
             if(ratings[i] > input){
-                cout << "ABOVE " << input << endl;
-                cout << "Player " << j+1 << " -- Jersey number: " << jersey_numbers[i] << ", Rating: " << ratings[i] << endl;
+                cout << "Player " << i+1 << " -- Jersey number: " << jersey_numbers[i] << ", Rating: " << ratings[i] << endl;
                 j++;
             }
         }
@@ -99,22 +108,22 @@ using namespace std;
         {
         case 'a':
         //working
-            add_player(ratings, jersey_numbers);
+            add_player();
             break;
         case 'd':
         //working
-            remove_player(ratings, jersey_numbers);
+            remove_player();
             break;
         case 'u':
         //working
-            update_rating(ratings, jersey_numbers);
+            update_rating();
             break;
         case 'r':
             //method
-            above_rating(ratings, jersey_numbers);
+            above_rating();
             break;
         case 'o':
-            output_roster(ratings, jersey_numbers);
+            output_roster();
             break;
         case 'q':
             //method
@@ -128,12 +137,9 @@ using namespace std;
     }
 int main() {
 
-    vector<int> ratings;
-    vector<int> jersey_numbers;
     int jersey;
     int rating;
     int j = 0;
-    // int k = 0;
     for(int i = 0; i < 5; i++){
         cout << "Enter player " << j+1 << "'s jersey number:" << endl;
         cin >> jersey;
@@ -144,7 +150,8 @@ int main() {
         ratings.push_back(rating);
         j++;
     }
-    output_roster(ratings, jersey_numbers);
+
+    output_roster();
     menu(ratings, jersey_numbers);
    return 0;
 }
