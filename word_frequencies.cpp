@@ -6,35 +6,20 @@
 using namespace std;
 
  int GetWordFrequency(vector<string> wordsList, string currWord){
-    
-     for(unsigned int i = 0; i<wordsList.size();i++){
-        transform(wordsList[i].begin(), wordsList[i].end(), wordsList[i].begin(), ::tolower);
-    }
     int count = 0;
-    //outer loop will loop through number of elements in the list
-    // int j = 1;
-        //Inner loop comparing words
-        // if(wordsList[0] == currWord){
 
+    transform(currWord.begin(), currWord.end(), currWord.begin(), ::tolower);
+    for(int i = 0; i<wordsList.size();i++){
+        transform(wordsList[i].begin(), wordsList[i].end(), wordsList[i].begin(), ::tolower);
+        }
         for(unsigned int j = 0; j < wordsList.size(); j++){
-            //comparing two strings
             if(currWord == wordsList[j]){
                 count++;
             }
-           
         }
-        // }
-        // else{
-        //     count = 0;
-        //     for(int k = 1; k < wordsList.size(); k++){
-        //     //comparing two strings
-        //     if(currWord == wordsList[j]){
-        //         count++;
-        //     }
-        // }
-        // }
+
     return count;
- }
+    }
 
 int main() {
 
@@ -56,10 +41,6 @@ int main() {
         input_words.push_back(word);
         
     }
-    //changing all letters to lower case
-    // for(int i = 0; i<input_words.size();i++){
-    //     transform(input_words_lower_case[i].begin(), input_words_lower_case[i].end(), input_words_lower_case[i].begin(), ::tolower);
-    // }
 
     for(int k = 0; k < number_of_words; k++)
     {
