@@ -2,52 +2,26 @@
 
 using namespace std;
 
+// Made global variable
+int count = 1;
 void PrintNumPattern(int num1, int num2){
-    static int NUMBER = 12;
-    int currentNumber = num1;
-    int count = 0;
 
-    //use a counter to count how many times 
-    //it iterates to get to a negative and then 
-    //use that variable to make a loop and base case 
-    //to know how many times it needs to add again
-    if(currentNumber < 0){
-        if(currentNumber == num1){
-            // cout << "hi " <<num1;        
-            return;
-        }
-        else{
-            currentNumber = currentNumber + num2;
-            cout << currentNumber;
-            PrintNumPattern(currentNumber, num2);
-        }
+//Checking to see how many times it loops to get to a negative number
+    if(num1 >= 0){
+        cout << num1 << " ";
+        num1 = num1 - num2;
+        count++;
+        PrintNumPattern(num1, num2);
+
     }
+
     else{
-    cout << currentNumber << " ";
-    currentNumber = num1 - num2;
-    // count++;
-    // cout<<count;
-    PrintNumPattern(currentNumber, num2);
-
+//Loops the same amount of iterations but adding this time
+        for(int i = 0; i<count; i++){
+        cout << num1 << " ";
+        num1 = num1 + num2;
+        }
     }
-
-    // if(currentNumber >= 0){
-    //     cout << currentNumber << " ";
-    //     currentNumber = currentNumber - num2;
-    //     PrintNumPattern(currentNumber, num2);
-    // }
-
-    // else{
-    //     cout << currentNumber << " ";
-    //     currentNumber = currentNumber + num2;
-    //     PrintNumPattern(currentNumber, num2);
-    //     if(currentNumber == 12){
-    //         cout << currentNumber;
-    //         return;
-    //     }
-    // }
-
-
 }
 
 int main() {
