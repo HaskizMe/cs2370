@@ -1,5 +1,0 @@
-understand cin and getline
-Understand overflow with ints and size
-understand inputs and outputs such as return
-Understand switch and what you need for it to work properly. Make sure to understand if you dont have a break 
-Dont mixed up with word problems and pay careful attention to the logical operators in the code
