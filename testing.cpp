@@ -105,25 +105,12 @@ using namespace std;
         }
     }
  
-    // Remove trailing spaces
-    if (i <= 1)
-        str.erase(str.begin() + i, str.end());
-    else
-        str.erase(str.begin() + i - 1, str.end());
+        str.erase(str.begin() + i , str.end());
 }
  
-    void PrintMenu(){
-        cout << "" << endl;
-        cout << "MENU" << endl;
-        cout << "c - Number of non-whitespace characters\nw - Number of words\nf - Find text\nr - Replace all !'s\ns - Shorten spaces\nq - Quit\n" << endl;
-        cout << "Choose an option:" << endl;
 
-    }
     void ExecuteMenu(char input, string text){
         string i = "";
-        do{
-        cin >> input;
-        PrintMenu();
     switch (input)
         {
         case 'c':
@@ -156,38 +143,45 @@ using namespace std;
             cout << "Please enter a valid letter" << endl;
             break;
         }
-        } 
-        while(input != 'q');
 
     }
     // PrintMenu Method
     // void PrintMenu(){
-    // // string str = "";
-    // // char c;
-    // // cout << "Enter a sample text:" << endl;
-    // // cout << "" << endl;
-    // // getline (cin,str);
-    // // cout << "You entered: " << str << endl;
-    // // do{
+    // string str = "";
+    // char c;
+    // cout << "Enter a sample text:" << endl;
+    // cout << "" << endl;
+    // getline (cin,str);
+    // cout << "You entered: " << str << endl;
+    // do{
     //     cout << "" << endl;
     //     cout << "MENU" << endl;
     //     cout << "c - Number of non-whitespace characters\nw - Number of words\nf - Find text\nr - Replace all !'s\ns - Shorten spaces\nq - Quit\n" << endl;
     //     cout << "Choose an option:" << endl;
-    //     // cin >> c;
-    //     // ExecuteMenu(c,str);
-    // // }
-    // // while(c!='q');
+    //     cin >> c;
+    //     ExecuteMenu(c,str);
     // }
-
+    // while(c!='q');
+    // }
+    void PrintMenu(){
+        // cout << "" << endl;
+        cout << "MENU" << endl;
+        cout << "c - Number of non-whitespace characters\nw - Number of words\nf - Find text\nr - Replace all !'s\ns - Shorten spaces\nq - Quit\n";
+    }
 int main() {
     string str = "";
     char c;
     cout << "Enter a sample text:" << endl;
     cout << "" << endl;
-    getline(cin,str);
+    getline (cin,str);
     cout << "You entered: " << str << endl;
+    do{
     PrintMenu();
+    cout << "Choose an option:" << endl; 
     cin >> c;
-    ExecuteMenu(c, str);
+    ExecuteMenu(c,str);
+    }
+    while(c != 'q');
+
     return 0;
 }
