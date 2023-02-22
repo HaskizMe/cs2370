@@ -145,9 +145,6 @@ using namespace std;
         }
 
     }
-    void PrintMenu2(){
-        
-    }
     // PrintMenu Method
     void PrintMenu(){
     string str = "";
@@ -166,6 +163,13 @@ using namespace std;
     }
     while(c!='q');
     }
+
+    // void PrintMenu(){
+    //     // cout << "" << endl;
+    //     cout << "MENU" << endl;
+    //     cout << "c - Number of non-whitespace characters\nw - Number of words\nf - Find text\nr - Replace all !'s\ns - Shorten spaces\nq - Quit\n";
+    // }
+    
 
 int main() {
     PrintMenu();
