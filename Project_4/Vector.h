@@ -42,16 +42,27 @@ public:
         capacity = CHUNK;
         n_elems = 0;
     }
-    // Vector(const Vector &v){
-    //     data_ptr = v.data_ptr;
-    //     // data_ptr = new int[v.capacity];
-    //     // capacity = v.capacity;
-    //     // memcpy(data_ptr, v.data_ptr, sizeof(int) * capacity);
-    // };            // Copy constructor
+    Vector(const Vector &v){
+        // Copy constructor
+        // data_ptr = v.data_ptr;
+        std::cout << "copy constructor called" << std::endl;
+
+        this->n_elems = v.n_elems;
+        this->data_ptr = new int [this->n_elems];
+        for(int i = 0; i < this->n_elems; ++i){
+            this->data_ptr[i] = v.data_ptr[i];
+        }
+    };            // Copy constructor
     Vector &operator=(const Vector &v){
-        std::cout << "has been called" << std::endl;
+        std::cout << "operator= called" << std::endl;
         // (*this->data_ptr) = (*v.data_ptr);
-        data_ptr = v.data_ptr;
+        // data_ptr = v.data_ptr;
+        this->n_elems = v.n_elems;
+        delete[] this->data_ptr;
+        this->data_ptr =  new int[this->n_elems];
+        for(int i = 0; i < this->n_elems; ++i){
+            this->data_ptr[i] = v.data_ptr[i];
+        }
         return *this;
     }; // Copy assignment operator
 
@@ -113,7 +124,7 @@ public:
             grow();
         }
         data_ptr[n_elems] = item;
-        n_elems++;
+        ++n_elems;
     }; // Append a new element at the end of the array
     void pop_back()
     {
@@ -139,14 +150,40 @@ public:
     }; // Remove item in position pos and shuffles following items left
     void insert(size_t pos, int item)
     {
-        if (pos > n_elems)
+        if ((pos >= n_elems) || (pos < 0))
         {
             throw std::range_error("Not valid index");
         }
-        n_elems++;
-        for (int i = n_elems; i >= pos; i--)
-        {
-            data_ptr[i] = data_ptr[i - 1];
+        // n_elems++;
+        if(pos == 0){
+            int *temp = new int[capacity];
+            // Copying elements to temp array
+            for (int i = 0; i < capacity; i++)
+            {
+                temp[i+1] = data_ptr[i];
+            }
+            data_ptr = temp;
+            data_ptr[pos] = item;
+
+            // for(int i = n_elems; i >= pos; i--){
+            //     data_ptr[i] = data_ptr[i-1];
+            // }
+            // data_ptr[pos] = item;
+            ++n_elems;
+        }
+        else if (n_elems != capacity){
+            std::cout << "inserting" << std:: endl;
+            for (int i = n_elems; i >= pos; i--)
+            {
+                data_ptr[i + 1] = data_ptr[i];
+                // data_ptr[i] = data_ptr[i - 1];
+            }
+            data_ptr[pos] = item;
+            ++n_elems;
+        }
+        else{
+            grow();
+            insert(pos, item);
         }
 
         data_ptr[pos] = item;
@@ -183,21 +220,38 @@ public:
         return &data_ptr[n_elems - 1];
     }; // Return a pointer to 1 past last element, or nullptr if n_elems == 0
 
-    void print(){
-        for(int i; i < n_elems; i++){
-            std::cout << data_ptr[i] << std::endl;
-        }
+    // void print(){
+    //     for(int i; i < n_elems; i++){
+    //         std::cout << data_ptr[i] << std::endl;
+    //     }
 
-    };
+    // };
     // Comparators
-    bool operator==(const Vector &v) const;
-    bool operator!=(const Vector &v) const;
+    bool operator==(const Vector &v) const{
+        bool valid = false;
+        for(size_t i = 0; i < n_elems; i++){
+            if(data_ptr[i] == v.data_ptr[i]){
+                valid = true;
+            }
+            else {
+                valid = false;
+            }
+        }
+        return valid;
+    };
+    bool operator!=(const Vector &v) const{
+        bool notvalid = true;
+        for(size_t i = 0; i < n_elems; i++){
+            if(data_ptr[i] != v.data_ptr[i]){
+                notvalid = false;
+            }
+            else{
+                notvalid = true;
+            }
+    };
+            return notvalid;
 
-    // Vector& Vector::operator=(const Vector& rhs){
-    //     std::cout << "has been called" << std::endl;
-    //     (*this->data_ptr) = (*rhs.data_ptr);
-    //     return *this;
-    // }
+    }
 };
 
 #endif
