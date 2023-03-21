@@ -18,23 +18,77 @@ public:
         assert(0 <= pos && pos < NBITS);
         return bits & (IType(1) << pos);
     }
+
     void set(int pos){
-        bits |= (IType(1) << pos);
-    }        // Sets the bit at position pos
-    void set() {bits = IType(1);}             // Sets all bits
+    // Sets the bit at position pos
+        assign(pos, 1);
+    }
+    void set(){
+    // Sets all bits
+        bits = 0 - 1;
+    }
     void reset(int pos){
-        // IType(1).reset(pos)
-    }      // Resets (makes zero) the bit at position pos
+    // Resets (makes zero) the bit at position pos
+        assign(pos, 0);
+    }
     void reset(){
-        // IType(1).reset()
-    }            // Resets all bits
-    void assign(int pos, bool val); // Sets or resets the bit at position pos depending on val
-    void assign(IType n);     // Replaces the underlying integer with n
-    void toggle(int pos);     // Flips the bit at position pos
-    void toggle();            // Flips all bits
-    void shift(int n);        // If n > 0, shifts bits right n places; if n < 0, shifts left
-    void rotate(int n);       // If n > 0, rotates right n places; if n < 0, rotates left
-    int ones() const;         // Returns how many bits are set in the underlying integer
+    // Resets all bits
+        bits = 0;
+    }
+    void assign(int pos, bool val){ 
+    // Sets or resets the bit at position pos depending on val
+        if(0 <= pos && pos <= size()-1){
+            if(val && !at(pos)){
+                bits += IType(pow(2, pos));
+            }
+            else if(!val && at(pos)){
+                bits -= IType(pow(2,pos));
+            }
+        }
+    }
+    void assign(IType n){
+    // Replaces the underlying integer with n
+        bits = n;
+    }
+    void toggle(int pos){
+    // Flips the bit at position pos
+        bool curBit = at(pos);
+        assign(pos, !curBit);
+    }
+    void toggle(){
+    // Flips all bits
+        for(int i = 0; i < size(); i++){
+            toggle(i);
+        }
+    }
+    void shift(int n){
+    // If n > 0, shifts bits right n places; if n < 0, shifts left
+        if(n > 0){
+            bits = bits >> n;
+        }
+        else{
+            bits = bits << n * -1;
+        }
+    }
+    void rotate(int n){
+    // If n > 0, rotates right n places; if n < 0, rotates left
+        if(n > 0){
+            bits = (bits >> n) | (bits << (size() - n));
+        }
+        else{
+            bits = (bits << n*-1) | (bits >> (size() - (n*-1)));
+        }
+    }
+    int ones() const{        
+    // Returns how many bits are set in the underlying integer
+        int onesCount = 0;
+        for(int i = 0; i < size(); i++){
+            if(at(i)){
+                onesCount++;
+            }
+        }
+        return onesCount;
+    }
     int zeroes() const {      // Returns how many bits are reset in the underlying integer
         return NBITS - ones();
     }

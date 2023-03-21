@@ -1,7 +1,7 @@
-#include <string>
-#include <iostream>
-#include <stdexcept>
-using namespace std;
+// #include <string>
+// #include <iostream>
+// #include <stdexcept>
+// using namespace std;
 
 // int main() {
 //    string inputName;
@@ -37,53 +37,33 @@ using namespace std;
 //    return 0;
 // }
 
+#include <string>
+#include <iostream>
+#include <limits>
+using namespace std;
 
 int main() {
-   int weightVal;       // User defined weight (lbs)
-   int heightVal;       // User defined height (in)
-   float bmiCalc;       // Resulting BMI
-   char quitCmd;        // Indicates quit/continue
+   string inputName;
+   int age;
+   // Set exception mask for cin stream
+   cin.exceptions(ios::failbit);
 
-   quitCmd = 'a';
-   
-   while (quitCmd != 'q') {
-      
-      try {
-         // Get user data
-         cout << "Enter weight (in pounds): ";
-         cin >> weightVal;
-         
-         // Error checking, non-negative weight
-         if (weightVal < 0) {
-            throw runtime_error("Invalid weight.");
-         }
-         
-         cout << "Enter height (in inches): ";
-         cin >> heightVal;
-         
-         // Error checking, non-negative height
-         if (heightVal < 0) {
-            throw runtime_error("Invalid height.");
-         }
-         
-         // Calculate BMI and print user health info if no input error
-         // Source: http://www.cdc.gov/
-         bmiCalc = (static_cast<float>(weightVal) /
-                    static_cast<float>(heightVal * heightVal)) * 703.0;
-         
-         cout << "BMI: " << bmiCalc << endl;
-         cout << "(CDC: 18.6-24.9 normal)" << endl;
+   cin >> inputName;
+   while(inputName != "-1") {
+      try{
+            cin >> age;
+            cout << inputName << " " << age + 1 << endl;
+        }
+      catch(ios_base::failure){
+        cin.clear();
+        cout << inputName << " " << 0 << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
       }
-      catch (runtime_error& excpt) {
-         // Prints the error message passed by throw statement
-         cout << excpt.what() << endl;
-         cout << "Cannot compute health info." << endl;
-      }
-      
-      // Prompt user to continue/quit
-      cout << endl << "Enter any key ('q' to quit): ";
-      cin >> quitCmd;
-   }
+
+
+      cin >> inputName;
+}
    
    return 0;
 }
