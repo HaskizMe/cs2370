@@ -36,69 +36,83 @@ int DateParser(string month) {
 	return monthInt;
 }
 
+bool isDay(string day){
+	//Takes in day and makes sure that it has a comma
+	if (day.find(',') != std::string::npos){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+//Making sure last argument is an int
+bool isYear(string year){
+	return stoi(year);
+}
+
+string deleteDayComma(string day){
+	//Taking off the comma and storing it as a new string
+	int pos;
+	string sday = "";
+	for(unsigned int i = 0; i < day.size(); i++){
+		if(day[i] == ','){
+			pos = i;
+		}
+	}
+	sday = day.substr(0,pos);
+	return sday;
+}
 int main () {
+	string sday = "";
+	string syear = "";
+	int month;
+	string smonth = "";
 	string rawInput;
-	getline(cin, rawInput);
+    vector<string> v;
+	string outputStr = ""; 
 
-	istringstream iss(rawInput);
-    vector<string> result;
+	// loop that will keep going until user enters -1
+	while(true){
+		getline(cin, rawInput);
+		if(rawInput == "-1"){
+			break;
+		}
+		// Stores input in array by space
+		istringstream iss(rawInput);
+		vector<string> result;
 
-    for(string s;iss>>s;){
-        result.push_back(s);
+		for(string s;iss>>s;){
+			result.push_back(s);
+		}
+	// Checking to see if there is the right amount of arguments
+	//if not don't print anything or break from while loop
+	if(result.size() == 3){
+		smonth = result[0];
+		sday = result[1];
+		syear = result[2];
+		//Checking to see if first argument is able to be traced to a month
+		if(DateParser(smonth) != 0){
+			month = DateParser(smonth);
+			smonth = to_string(month);
+			//Now checking day
+			if(isDay(sday)){
+				sday = deleteDayComma(sday);
+				// Now lastly checking year
+				if(isYear(syear)){
+					//Storing and formating values in string
+					//Storing the string in a vector
+					outputStr = smonth + "-" + sday + "-" + syear;
+					v.push_back(outputStr);
+				}
+			}
+		}
 	}
-    int n=result.size();
+}
 
-    for(int i=0;i<n;i++){
-        cout<<result[i]<<endl;
+	//Looping through vector and printing out the valid dates
+	for(unsigned int i = 0; i < v.size(); i++){
+		cout << v.at(i) << endl;
 	}
-	int date;
-	int num;
-	string a = " ";
-	string c = " ";
-	// if(typeid(a).name() == typeid(result.at(0)).name()){
-    try 
-    {
-          num = stoi(result.at(1));
-		  cout << num << endl;
-		  cout << typeid(num).name() << endl;
-		//   date = DateParser(result.at(0));
-
-		//   cout << date << endl;
-    }
-    catch (exception e) { 
-	}
-	cout << date << endl;
-	// if(num = stoi(result.at(0))){
-	// 	cout << "True" << endl;
-	// 	date = DateParser(result.at(0));
-	// 	// if (result.at(1).find(',') != std::string::npos){
-	// 	// 	cout << "found" << endl;
-	// 	// }
-	// }
-
-	// else{
-	// 	cout << "not found" << endl;
-	// 	return 0;
-	// }
-// int main()
-// {
-//     std::string date_time_format = "%m/%d/%Y";
-//     std::istringstream ss{ "4/28/2022" };
-//     std::chrono::year_month_day date;
-
-//     ss >> std::chrono::parse(date_time_format, date);
-
-//     if (!ss) {
-//         /* failed to parse date */
-        
-//     }
-
-//     std::cout << "Year: "  << date.year()  << '\n';
-//     std::cout << "Month: " << date.month() << '\n';
-//     std::cout << "Day: "   << date.day()   << '\n';
-// }
-
-	// TODO: Read dates from input, parse the dates to find the ones
-	//       in the correct format, and output in m-d-yyyy format
 
 }
