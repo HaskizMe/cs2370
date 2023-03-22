@@ -44,7 +44,6 @@ public:
     }
     Vector(const Vector &v){
         // Copy constructor
-        // data_ptr = v.data_ptr;
         std::cout << "copy constructor called" << std::endl;
 
         this->n_elems = v.n_elems;
@@ -55,8 +54,6 @@ public:
     };            // Copy constructor
     Vector &operator=(const Vector &v){
         std::cout << "operator= called" << std::endl;
-        // (*this->data_ptr) = (*v.data_ptr);
-        // data_ptr = v.data_ptr;
         this->n_elems = v.n_elems;
         delete[] this->data_ptr;
         this->data_ptr =  new int[this->n_elems];
@@ -190,10 +187,11 @@ public:
     }; // Shuffle items right to make room for a new element
     void clear()
     {
-        n_elems = 0;
+        // n_elems = 0;
         for (int i = 0; i < n_elems; i++)
         {
             data_ptr[i] = 0;
+            n_elems--;
         }
     }; // n_elems = 0 (nothing else to do; keep the current capacity)
 
