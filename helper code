@@ -1,0 +1,22 @@
+int main() {
+   string input;
+   while (getline(cin, input) && input != "-1") {
+       // Check if input has the correct format
+       if (input.length() >= 13 && input[input.length() - 5] == ',' && input[input.length() - 10] == ' ') {
+           // Extract month, day, and year from input
+           string month = input.substr(0, input.find(' '));
+           string day = input.substr(input.find(' ') + 1, input.find(',') - input.find(' ') - 1);
+           string year = input.substr(input.length() - 4);
+
+           // Parse month to integer
+           int monthInt = DateParser(month);
+
+           // Check if month is valid and output in m-d-yyyy format
+           if (monthInt != 0) {
+               cout << monthInt << "-" << day << "-" << year << endl;
+           }
+       }
+   }
+
+   return 0;
+}
