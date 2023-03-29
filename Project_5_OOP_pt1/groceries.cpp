@@ -3,6 +3,7 @@
 #include "split.h"
 #include <fstream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 // My global vector
@@ -119,22 +120,62 @@ bool custid_found(vector<customer> c, int num){
     return false;
 }
 
-void find_item()
+bool item_found(vector<item> item, int num){
+    for(int i = 0; i < item.size(); i++){
+        if(item[i].itemid == num){
+            return true;
+        }
+    }
+    return false;
+}
 
+int find_item(vector<item> item, int num){
+    int index;
+    for(int i = 0; i < item.size(); i++){
+        if(item[i].itemid == num){
+            index = i;
+        }
+    }
+    return index;
+}
 
+int find_customer(vector<customer> customer, int num){
+    int index;
+    for(int i = 0; i < customer.size(); i++){
+        if(customer[i].customerid == num){
+            index = i;
+        }
+    }
+    return index;
+}
 
-int main() {
+void print_order(vector<string> customer_orders_description, vector<float> customer_orders_prices, int id, string name){
+    // cout << name <<" Customer id " << id << "'s order" << endl;
+    cout << "id number " << id << " " << name << "'s order" << endl;
+    cout << setfill('-') << setw(64) << "" << endl;
+    float total_price;
+    cout << setfill(' ');
+    for(int i = 0; i < customer_orders_description.size(); i++){
+        string description = customer_orders_description.at(i);
+        float price = customer_orders_prices.at(i);
+        total_price += customer_orders_prices.at(i);
+        cout << "description: " << setw(35) << left << description << "|";
+        cout << setw(10) << right << "Price: $" << price << endl;
+    }
+    cout << setfill('-') << setw(64) << "" << endl;
+
+    cout << "total price: $" << total_price << endl;
+}
+
+void one_customer_order(){
     vector<customer> cust;
     vector<item> items;
     vector<string> raw_items_data;
+    vector<string> customer_orders_description;
+    vector<float> customer_orders_prices;
 
-
-
-    // customers.customerid = 50;
-    // cout << customers.customerid << endl;
-    read_customers("customers.txt"); // Step 1 above
-    read_items("items.txt"); // Step 2 above
-    items = store_items();
+    int item_id;
+        items = store_items();
     cust = store_customers();
 
     int custid;
@@ -142,33 +183,45 @@ int main() {
     cout << "And there are " << my_vector_items_txt.size() << " items." << endl;
     cout << "Please enter a customer number:" << endl;
     cin >> custid;
-
+    string name = cust.at(find_customer(cust, custid)).name;
 
     if(!custid_found(cust, custid)){
         cout << "Error: Customer id not found" << endl;
     }
     else{
-        do{
-            int input;
-            cout << "Please enter an item number to purchase" << endl;
-            cin >> input;
-            cout << 
-        } while (input == 0);
-        
+    
+    do{
+        cout << "Please enter an item number to purchase or enter 0 to exit" << endl;
+        cin >> item_id;
+        if(item_found(items, item_id)){
+            int index;
+            index = find_item(items, item_id);
+            string description = items.at(index).description;
+            float price = items.at(index).price;
+            cout << "description: " << setw(description.length() + 3) << left << description << "|";
+            cout << setw(10) << right << " Price: $" << price << endl;
+            customer_orders_description.push_back(items.at(index).description);
+            customer_orders_prices.push_back(items.at(index).price);
+
+        }
+        else if(item_id == 0){
+            cout << "Exiting program\n" << endl;
+        }
+        else{
+            cout << "Item id not found!" << endl;
+        }
+
+    } while (item_id != 0);
+
+        print_order(customer_orders_description, customer_orders_prices, custid, name);
+
     }
-    // cout << cust[0].customerid;
-    // cout << custid_found(cust, custid) << endl;
-
-    // if()
-    // items = store_items();
-    // cust = store_customers();
-
-    // cout << items.at(197).description << endl;
-    // cout << store_customers().at(299).city << endl;
-
-    // cout << custid;
-    // cout<< read_items("items.txt").at(1) << endl;
-    // one_customer_order(); // The rest of the step
-    // print_vector();
-    // print_vector_size();
 }
+
+
+int main() {
+    read_customers("customers.txt"); // Step 1 above
+    read_items("items.txt"); // Step 2 above
+    one_customer_order();
+}
+
