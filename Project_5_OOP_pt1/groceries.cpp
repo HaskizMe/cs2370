@@ -38,9 +38,6 @@ void print_vector_size(){
     cout << my_vector_customer_txt.size() << endl;
 }
 
-int find_cust_idx(int cust_id);
-int find_item_idx(int item_id);
-
 void read_customers(string customers_file){
     ifstream read_file(customers_file);
     string text;
