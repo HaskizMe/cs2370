@@ -6,7 +6,7 @@
 #include <iomanip>
 using namespace std;
 
-// My global vector
+// My global vectors
 vector<string> my_vector_customer_txt;
 vector<string> my_vector_items_txt;
 // customer class
@@ -28,21 +28,14 @@ struct item{
     float price;
 }items;
 
-void print_vector(){
-    for(int i = 0; i < my_vector_customer_txt.size(); i++){
-        cout << my_vector_customer_txt[i] << endl;
-    }
-
-}
-void print_vector_size(){
-    cout << my_vector_customer_txt.size() << endl;
-}
-
+// Reading and storing all customers in a global vector
 void read_customers(string customers_file){
     ifstream read_file(customers_file);
     string text;
+
+    // Checking if file exists
     if(read_file.is_open()){
-        int j = 0;
+        // Grabbing each line and putting them in a global customer vector
         while(getline (read_file, text)){
             my_vector_customer_txt.push_back(text);
         }
@@ -52,12 +45,14 @@ void read_customers(string customers_file){
     }
 }
 
+// Same thing as read_customers but reads items
 vector<string> read_items(string items_file){
-    // vector<string> v;
     ifstream read_file(items_file);
     string text;
+
+    // Checking if file exists
     if(read_file.is_open()){
-        int j = 0;
+        // Grabbing each item and putting it in its own global vector
         while(getline (read_file, text)){
             my_vector_items_txt.push_back(text);
         }
@@ -69,7 +64,7 @@ vector<string> read_items(string items_file){
     return my_vector_items_txt;
 }
 
-
+// Creating item objects and storing them to a new vector
 vector<item> store_items(){
     // Creating a vector
     vector<item> it_vect;
@@ -77,6 +72,7 @@ vector<item> store_items(){
     for(int i = 0; i < my_vector_items_txt.size(); i++){
         item obj_item;
         // Filling out information of each object attribute
+        // by calling the split function and splitting by comma
         obj_item.itemid = stoi(split(my_vector_items_txt[i],',').at(0));
         obj_item.description = split(my_vector_items_txt[i],',').at(1);
         obj_item.price = stof(split(my_vector_items_txt[i],',').at(2));
@@ -87,6 +83,7 @@ vector<item> store_items(){
     return it_vect; 
 }
 
+// Same thing as store_items just doing it with customers
 vector<customer> store_customers(){
     // Creating a vector
     vector<customer> c;
@@ -94,6 +91,7 @@ vector<customer> store_customers(){
     for(int i = 0; i < my_vector_customer_txt.size(); i++){
         customer obj;
         // Filling out information of each object attribute
+        // by calling the split function and splitting by comma
         obj.customerid = stoi(split(my_vector_customer_txt[i],',').at(0));
         obj.name = split(my_vector_customer_txt[i],',').at(1);
         obj.street_address = split(my_vector_customer_txt[i],',').at(2);
@@ -105,9 +103,10 @@ vector<customer> store_customers(){
         // Storing in vector
         c.push_back(obj);
     }
-
     return c;
 }
+
+// Returning true or false if custid is found
 bool custid_found(vector<customer> c, int num){
     for(int i = 0; i < c.size(); i++){
         if(c[i].customerid == num){
@@ -117,6 +116,7 @@ bool custid_found(vector<customer> c, int num){
     return false;
 }
 
+// Same thing as custid_found but with items
 bool item_found(vector<item> item, int num){
     for(int i = 0; i < item.size(); i++){
         if(item[i].itemid == num){
@@ -126,7 +126,8 @@ bool item_found(vector<item> item, int num){
     return false;
 }
 
-int find_item(vector<item> item, int num){
+// Returns the index of the item searched
+int find_item_idx(vector<item> item, int num){
     int index;
     for(int i = 0; i < item.size(); i++){
         if(item[i].itemid == num){
@@ -136,7 +137,8 @@ int find_item(vector<item> item, int num){
     return index;
 }
 
-int find_customer(vector<customer> customer, int num){
+// Same thing as find_item just with customer
+int find_customer_idx(vector<customer> customer, int num){
     int index;
     for(int i = 0; i < customer.size(); i++){
         if(customer[i].customerid == num){
@@ -146,8 +148,8 @@ int find_customer(vector<customer> customer, int num){
     return index;
 }
 
+// Print order function with spacing and formatting
 void print_order(vector<string> customer_orders_description, vector<float> customer_orders_prices, int id, string name){
-    // cout << name <<" Customer id " << id << "'s order" << endl;
     cout << "id number " << id << " " << name << "'s order" << endl;
     cout << setfill('-') << setw(64) << "" << endl;
     float total_price;
@@ -164,61 +166,74 @@ void print_order(vector<string> customer_orders_description, vector<float> custo
     cout << "total price: $" << total_price << endl;
 }
 
+// Printing and running for one customer's order
 void one_customer_order(){
+    // All my variables
     vector<customer> cust;
     vector<item> items;
-    vector<string> raw_items_data;
     vector<string> customer_orders_description;
     vector<float> customer_orders_prices;
-
+    int custid;
     int item_id;
-        items = store_items();
+    int index;
+    string name;
+
+    items = store_items();
     cust = store_customers();
 
-    int custid;
+    // Printing size of customers and size of items in file
     cout << "There are " << my_vector_customer_txt.size() << " customers." << endl;
     cout << "And there are " << my_vector_items_txt.size() << " items." << endl;
     cout << "Please enter a customer number:" << endl;
+    // Asking for customer's id
     cin >> custid;
-    string name = cust.at(find_customer(cust, custid)).name;
 
+    // Storing name of customer's id
+    name = cust.at(find_customer_idx(cust, custid)).name;
+
+    // If custid is not found then exit program
     if(!custid_found(cust, custid)){
         cout << "Error: Customer id not found" << endl;
     }
+    // Run a loop if custid is found
     else{
     
-    do{
-        cout << "Please enter an item number to purchase or enter 0 to exit" << endl;
-        cin >> item_id;
-        if(item_found(items, item_id)){
-            int index;
-            index = find_item(items, item_id);
-            string description = items.at(index).description;
-            float price = items.at(index).price;
-            cout << "description: " << setw(description.length() + 3) << left << description << "|";
-            cout << setw(10) << right << " Price: $" << price << endl;
-            customer_orders_description.push_back(items.at(index).description);
-            customer_orders_prices.push_back(items.at(index).price);
+        do{
+            cout << "Please enter an item number to purchase or enter 0 to exit" << endl;
+            cin >> item_id;
 
-        }
-        else if(item_id == 0){
-            cout << "Exiting program\n" << endl;
-        }
-        else{
-            cout << "Item id not found!" << endl;
-        }
+            // If found then print out description and price with formatting
+            // and store descriptions and price in seperate vectors
+            if(item_found(items, item_id)){
+                index = find_item_idx(items, item_id);
+                string description = items.at(index).description;
+                float price = items.at(index).price;
+                cout << "description: " << setw(description.length() + 3) << left << description << "|";
+                cout << setw(10) << right << " Price: $" << price << endl;
+                customer_orders_description.push_back(items.at(index).description);
+                customer_orders_prices.push_back(items.at(index).price);
 
-    } while (item_id != 0);
+            }
+            // If input is 0 then exit loop
+            else if(item_id == 0){
+                cout << "Exiting program\n" << endl;
+            }
+            // If not found then print error
+            else{
+                cout << "Error: item id not found!" << endl;
+            }
 
-        print_order(customer_orders_description, customer_orders_prices, custid, name);
+        } while (item_id != 0);
+
+    // Call print order function
+    print_order(customer_orders_description, customer_orders_prices, custid, name);
 
     }
 }
 
 
 int main() {
-    read_customers("customers.txt"); // Step 1 above
-    read_items("items.txt"); // Step 2 above
+    read_customers("customers.txt");
+    read_items("items.txt");
     one_customer_order();
 }
-
