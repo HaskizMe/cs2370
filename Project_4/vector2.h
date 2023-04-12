@@ -1,4 +1,4 @@
-//This works
+// Original
 
 #ifndef VECTOR_H
 #define VECTOR_H
@@ -8,417 +8,229 @@
 using namespace std;
 using std::size_t;
 
+
+// My class called Vector
 class Vector
 {
-    enum
-    {
+    enum{
         CHUNK = 10
     };
-    int *data_ptr;   // Pointer to the heap array
+
+    // My attributes for vector class
     size_t capacity; // Size of the current array allocation (total number of ints, in use or not)
     size_t n_elems;  // Number of int spaces currently in use, starting from position 0
-    void grow();
+    int *data_ptr;   // Pointer to the heap array
+
+    // Used to dynamically grow an array
+    void grow(){
+        // Growing array by 1.6
+        capacity *= 1.6;
+        int *temp = new int[capacity];
+        // Copying elements to temp array
+        for (int i = 0; i < capacity; i++){
+            temp[i] = data_ptr[i];
+        }
+        // Deleting data_ptr and giving it a new memoring address of temp
+        delete[] data_ptr;
+        data_ptr = temp;
+    };
 
 public:
     // Object Mgt.
-    Vector();
-    Vector(const Vector &v);            // Copy constructor
-    Vector &operator=(const Vector &v); // Copy assignment operator
-    ~Vector();
-
-    // Accessors
-    int front() const;        // Return the int in position 0, if any
-    int back() const;         // Return last element (position n_elems-1)
-    int at(size_t pos) const; // Return element in position "pos" (0-based)
-    size_t size() const;      // Return n_elems
-    bool empty() const;       // Return n_elems == 0
-
-    // Mutators
-    int &operator[](size_t pos);       // Same as at but no bounds checking
-    void push_back(int item);          // Append a new element at the end of the array
-    void pop_back();                   // --n_elems (nothing else to do; returns nothing)
-    void erase(size_t pos);            // Remove item in position pos and shuffles following items left
-    void insert(size_t pos, int item); // Shuffle items right to make room for a new element
-    void clear();                      // n_elems = 0 (nothing else to do; keep the current capacity)
-
-    // Iterators
-    int *begin(); // Return a pointer to 1st element, or nullptr if n_elems == 0
-    int *end();   // Return a pointer to 1 past last element, or nullptr if n_elems == 0
-
-    // Comparators
-    bool operator==(const Vector &v) const;
-    bool operator!=(const Vector &v) const;
-};
-Vector::Vector(){
-    data_ptr = new int[CHUNK];
-    capacity = CHUNK;
-    n_elems = 0;
-}
-Vector::Vector(const Vector &v){
-    this->capacity = v.capacity;
-    this->data_ptr = new int[this->capacity];
-    this->n_elems = v.n_elems;
-    for(int i = 0;i<v.n_elems;i++){
-        this->data_ptr[i] = v.at(i);
+    Vector(){
+        // default constructor that creates a starting array
+        data_ptr = new int[CHUNK];
+        capacity = CHUNK;
+        n_elems = 0;
     }
-}
-Vector& Vector::operator=(const Vector &v){
-    this->capacity = v.capacity;
-    this->data_ptr = new int[this->capacity];
-    this->n_elems = v.n_elems;
+    // Copy constuctor 
+    Vector(const Vector &v){
+    // Used to make a deep copy of the array
+    capacity = v.capacity;
+    data_ptr = new int[capacity];
+    n_elems = v.n_elems;
     for(int i = 0;i<v.n_elems;i++){
-        this->data_ptr[i] = v.at(i);
+        data_ptr[i] = v.data_ptr[i];
+    }
+    };
+
+    // = operator to assign new objects to other objects
+    Vector &operator=(const Vector &v){
+    // Basically the same thing as the copy constructor
+    // Except return the pointer to this object
+    capacity = v.capacity;
+    data_ptr = new int[capacity];
+    n_elems = v.n_elems;
+    for(int i = 0;i<v.n_elems;i++){
+        data_ptr[i] = v.data_ptr[i];
     }
     return (*this);
-}
-Vector::~Vector(){
-    delete[] data_ptr;
-}
+    };
 
-void Vector::grow(){
-    capacity = (capacity*16)/10;
-    int* temp_ptr = new int[capacity];
-    for(int i=0;i<capacity;i++){
-        temp_ptr[i] = data_ptr[i];
-    } 
-    delete[] data_ptr;
-    data_ptr = temp_ptr;
+    // Deconstructor to not all memory leaks
+    ~Vector(){
+        delete[] data_ptr;
     }
 
-int Vector::front() const{// Return the int in position 0, if any
-    if(this->n_elems==0){
-        throw range_error("Out of bound");
-    }else{
+    // Accessors
+
+    // Returns the front element
+    int front() const{
+        // If array is empty throw an error
+        if (n_elems == 0){
+            throw std::range_error("Not valid index");
+        }
+        // Return the int in position 0, if any
         return data_ptr[0];
-    }
-}        
-int Vector::back() const{         // Return last element (position n_elems-1)
-    if(this->n_elems==0){
-        throw range_error("Out of bound");
-    }else{
-        return data_ptr[n_elems-1];
-    }
-}
-int Vector::at(size_t pos) const{ // Return element in position "pos" (0-based)
-    if(pos>=0 && pos<n_elems){
-        return data_ptr[pos];
 
-    }else{
-        throw range_error("Out of bound");
-    }
-}
-size_t Vector::size() const{      // Return n_elems
-    return (size_t)n_elems;
-}
-bool Vector::empty() const{
-    return n_elems==0;
-}
-int& Vector::operator[](size_t pos){       // Same as at but no bounds checking
-    return this->data_ptr[pos];
-} 
-void Vector::push_back(int item){          // Append a new element at the end of the array
+    };
+    int back() const{
+        // If array is empty throw an error
+        if (n_elems == 0){
+            throw std::range_error("Not valid index");
+        }
+        // Return last element
+        return data_ptr[n_elems - 1];
+    };
+    int at(size_t pos) const{
+        // Return element in position "pos"
+        // If within valid index then return element at "pos"
+        if(pos>=0 && pos<n_elems){
+            return data_ptr[pos];
+        }
+        // else throw error
+        else {
+            throw std::range_error("Not valid index");
+        }
+    };
+
+    size_t size() const{
+        // Return n_elems
+        return (size_t)n_elems;
+    };
+
+    bool empty() const{
+        // Return true or false based on if empty
+        return n_elems == 0;
+    };
+
+    // Mutators
+    int &operator[](size_t pos){
+        // Same as at but no bounds checking
+        return data_ptr[pos];
+    };
+
+    // Append a new element at the end of the array
+    void push_back(int item){
+    // If element reaches capacity then grow the array then add element to back
     if(capacity==n_elems){
         grow();
         data_ptr[n_elems] = item;
         n_elems++;
-    }else{
+    }
+    // Else just add element to back
+    else{
         data_ptr[n_elems++] = item;
     }
-}
-void Vector::pop_back(){                   // --n_elems (nothing else to do; returns nothing)
-    if(n_elems==0){
-        throw range_error("Out of bound");
-    }else{
-        n_elems--;
-    }
-}
-void Vector::erase(size_t pos){            // Remove item in position pos and shuffles following items left
-    if(pos>=0 && pos<n_elems){
+    };
+
+    // Delete last element
+    void pop_back(){
+        // If empty throw an error
+        if (n_elems == 0){
+            throw std::range_error("Not valid index");
+        }
+        // Else delete last element in array
+        else{
+            data_ptr[n_elems-1] = 0;
+            n_elems--;
+        }
+    };
+
+    // Erase element at given position
+    void erase(size_t pos){
+    // If within index then find element at given position
+    // and move all other elements down one
+    if(pos >= 0 && pos < n_elems){
+
         for(int i=pos+1;i<n_elems;i++){
             data_ptr[i-1] = data_ptr[i];
         }
+        // remove n_elems by one
         n_elems--;
-    }else{
-        throw range_error("Out of bound");    
     }
-}
-void Vector::insert(size_t pos, int item){ // Shuffle items right to make room for a new element
-    if(capacity==n_elems){
-        grow();
+    // Else throw range error
+    else{
+        throw std::range_error("Out of bound");    
     }
-    for(int i=n_elems;i>pos;i--){
-        data_ptr[i] = data_ptr[i-1];
-    }
-    data_ptr[pos] = item;
-    n_elems++;
-}
-void Vector::clear(){
-    delete[] data_ptr;
-    data_ptr = new int[CHUNK];
-    capacity = CHUNK;
-    n_elems = 0;
-}
+    };
+    
+    // Remove item in position pos and shuffles following items left
+    void insert(size_t pos, int item){ 
+        // If new element reaches capacity grow the array
+        if(capacity==n_elems){
+            grow();
+        }
+        // Shuffle items right to make room for a new element
+        for(int i=n_elems;i>pos;i--){
+            data_ptr[i] = data_ptr[i-1];
+        }
+        // Add element at given position and increase n_elems
+        data_ptr[pos] = item;
+        n_elems++;
+    };
 
-// Iterators
-    int* Vector::begin(){// Return a pointer to 1st element, or nullptr if n_elems == 0
-        if(n_elems==0)return nullptr;
+    // n_elems = 0 (nothing else to do; keep the current capacity)
+    void clear(){
+        // n_elems = 0;
+        for (int i = 0; i < n_elems; i++){
+            data_ptr[i] = 0;
+            n_elems--;
+        }
+    };
+
+    // Iterators
+    // Return a pointer to 1st element, or nullptr if n_elems == 0
+    int *begin(){
+        // If array is empty iterator will be null
+        if (n_elems == 0){
+            return NULL;
+        }
+        // Else return the pointer the first position of the array
+        // Return memory address
         return &data_ptr[0];
-    } 
-    int* Vector::end(){// Return a pointer to 1 past last element, or nullptr if n_elems == 0
-        if(n_elems==0)return nullptr;
-        return &data_ptr[n_elems];
-    }   
+    };
+
+    // Return a pointer to 1 past last element, or nullptr if n_elems == 0
+    int *end(){
+        // If array is empty iterator will be null
+        if (n_elems == 0){
+            return NULL;
+        }
+        // Else return the pointer the last position of the array
+        // Return memory address
+        else{
+            return &data_ptr[n_elems];
+        }
+    };
 
     // Comparators
-    bool Vector::operator==(const Vector &v) const{
+    // Compares objects to see if they're equal
+    bool operator==(const Vector &v) const{
+        // If both objects have the same capacity, number of elements
+        // and each element is equal to the corresponding elements from the other object
+        // return true
         if(this->capacity!=v.capacity)return false;
         if(this->n_elems!=v.n_elems)return false;
         for(int i=0;i<n_elems;i++){
             if(this->data_ptr[i]!=v.data_ptr[i])return false;
         }
         return true;
-    }
-    bool Vector::operator!=(const Vector &v) const{
+    };
+
+    // Calls the == operator to find if not equal
+    bool operator!=(const Vector &v) const{
         return !(operator==(v));
     }
-
+};
 #endif
-
-
-
-
-// original
-
-// #ifndef VECTOR_H
-// #define VECTOR_H
-// #include<iostream>
-// #include <cstddef>
-// #include<stdexcept>
-// using namespace std;
-// using std::size_t;
-
-// class Vector
-// {
-//     enum
-//     {
-//         CHUNK = 10
-//     };
-//     size_t capacity; // Size of the current array allocation (total number of ints, in use or not)
-//     size_t n_elems;  // Number of int spaces currently in use, starting from position 0
-//     int *data_ptr;   // Pointer to the heap array
-//     void grow()
-//     {
-//         // Growing array by 1.6
-//         capacity *= 1.6;
-//         int *temp = new int[capacity];
-//         // Copying elements to temp array
-//         for (int i = 0; i < capacity; i++)
-//         {
-//             temp[i] = data_ptr[i];
-//         }
-//         // Deleting data_ptr and giving it a new memoring address of temp
-//         delete[] data_ptr;
-//         data_ptr = temp;
-//     };
-
-// public:
-//     // Object Mgt.
-//     Vector()
-//     {
-//         data_ptr = new int[CHUNK];
-//         capacity = CHUNK;
-//         n_elems = 0;
-//     }
-//     Vector(const Vector &v){
-//         // Copy constructor
-//         this->capacity = v.capacity;
-//         this->data_ptr = new int [this->capacity];
-//         for(int i = 0; i < this->n_elems; ++i){
-//             this->data_ptr[i] = v.data_ptr[i];
-
-//         }
-//     };
-//     Vector &operator=(const Vector &v){
-//         // Copy assignment operator
-//         this->capacity = v.capacity;
-//         // delete[] this->data_ptr;
-//         this->data_ptr =  new int[this->capacity];
-//         for(int i = 0; i < this->n_elems; ++i){
-//             this->data_ptr[i] = v.data_ptr[i];
-//         }
-//         return *this;
-//     };
-
-//     ~Vector()
-//     {
-//         delete[] data_ptr;
-//     }
-
-//     // Accessors
-//     int front() const
-//     {
-//         if (n_elems == 0)
-//         {
-//             throw std::range_error("Not valid index");
-//         }
-//         // Return the int in position 0, if any
-//         return data_ptr[0];
-
-//     };
-//     int back() const
-//     {
-//         if (n_elems == 0)
-//         {
-//             throw std::range_error("Not valid index");
-//         }
-//         // Return last element (position n_elems-1)
-//         return data_ptr[n_elems - 1];
-//     };
-//     int at(size_t pos) const
-//     {
-//         // Return element in position "pos" (0-based)
-//         if(pos>=0 && pos<n_elems){
-//             return data_ptr[pos];
-//         }
-//         else{
-//             throw std::range_error("Not valid index");
-//         }
-//     };
-
-//     size_t size() const
-//     {
-//         // Return n_elems
-//         return (size_t)n_elems;
-//     };
-//     bool empty() const
-//     {
-//         return n_elems == 0;
-//     };
-
-//     // Mutators
-//     int &operator[](size_t pos)
-//     {
-//         // Same as at but no bounds checking
-//         return data_ptr[pos];
-//     };
-//     void push_back(int item){          // Append a new element at the end of the array
-//     if(capacity==n_elems){
-//         grow();
-//         data_ptr[n_elems] = item;
-//         n_elems++;
-//     }else{
-//         data_ptr[n_elems++] = item;
-//     }
-// };
-
-//  // Append a new element at the end of the array
-//     void pop_back()
-//     {
-//         // --n_elems (nothing else to do; returns nothing)
-//         if (n_elems == 0)
-//         {
-//             throw std::range_error("Not valid index");
-//         }
-//         else{
-//             n_elems--;
-//         }
-//     };
-//     void erase(size_t pos)
-//     {
-//     if(pos >= 0 && pos < n_elems){
-
-//         for(int i=pos+1;i<n_elems;i++){
-//             data_ptr[i-1] = data_ptr[i];
-//         }
-
-//         n_elems--;
-//     }else{
-//         throw std::range_error("Out of bound");    
-//     }
-//     }; // Remove item in position pos and shuffles following items left
-//     void insert(size_t pos, int item)
-//     {
-//         if ((pos >= n_elems) || (pos < 0))
-//         {
-//             throw std::range_error("Not valid index");
-//         }
-//         // n_elems++;
-//         if(pos == 0){
-//             int *temp = new int[capacity];
-//             // Copying elements to temp array
-//             for (int i = 0; i < capacity; i++)
-//             {
-//                 temp[i+1] = data_ptr[i];
-//             }
-//             data_ptr = temp;
-//             data_ptr[pos] = item;
-//             ++n_elems;
-//         }
-//         else if (n_elems != capacity){
-//             std::cout << "inserting" << std:: endl;
-//             for (int i = n_elems; i >= pos; i--)
-//             {
-//                 data_ptr[i + 1] = data_ptr[i];
-//                 // data_ptr[i] = data_ptr[i - 1];
-//             }
-//             data_ptr[pos] = item;
-//             ++n_elems;
-//         }
-//         else{
-//             grow();
-//             insert(pos, item);
-//         }
-
-//         data_ptr[pos] = item;
-//     }; // Shuffle items right to make room for a new element
-//     void clear()
-//     {
-//         // n_elems = 0;
-//         for (int i = 0; i < n_elems; i++)
-//         {
-//             data_ptr[i] = 0;
-//             n_elems--;
-//         }
-//     }; // n_elems = 0 (nothing else to do; keep the current capacity)
-
-//     // Iterators
-//     int *begin(){
-//         if (n_elems = 0){
-//             return NULL;
-//         }
-//         return &data_ptr[0];
-//     }; // Return a pointer to 1st element, or nullptr if n_elems == 0
-//     int *end(){
-//         if (n_elems == 0){
-//             return NULL;
-//         }
-//         else{
-//             return &data_ptr[n_elems];
-//         }
-//     }; // Return a pointer to 1 past last element, or nullptr if n_elems == 0
-
-//     // Comparators
-//     bool operator==(const Vector &v) const{
-//         if(this->capacity!=v.capacity)return false;
-//         if(this->n_elems!=v.n_elems)return false;
-//         for(int i=0;i<n_elems;i++){
-//             if(this->data_ptr[i]!=v.data_ptr[i])return false;
-//         }
-//         return true;
-//     };
-//     bool operator!=(const Vector &v) const{
-//         bool notvalid = true;
-//         for(size_t i = 0; i < n_elems; i++){
-//             if(data_ptr[i] != v.data_ptr[i]){
-//                 notvalid = false;
-//             }
-//             else{
-//                 notvalid = true;
-//             }
-//     };
-//             return notvalid;
-
-//     }
-// };
-
-// #endif

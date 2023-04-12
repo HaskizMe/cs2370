@@ -6,7 +6,7 @@
 using namespace std;
 using std::size_t;
 
-
+template<typename T>
 // My class called Vector
 class Vector
 {
@@ -17,15 +17,15 @@ class Vector
     // My attributes for vector class
     size_t capacity; // Size of the current array allocation (total number of ints, in use or not)
     size_t n_elems;  // Number of int spaces currently in use, starting from position 0
-    int *data_ptr;   // Pointer to the heap array
+    T *data_ptr;   // Pointer to the heap array
 
     // Used to dynamically grow an array
     void grow(){
         // Growing array by 1.6
         capacity *= 1.6;
-        int *temp = new int[capacity];
+        T *temp = new T[capacity];
         // Copying elements to temp array
-        for (int i = 0; i < capacity; i++){
+        for (int i = 0; i < n_elems; i++){
             temp[i] = data_ptr[i];
         }
         // Deleting data_ptr and giving it a new memoring address of temp
@@ -37,7 +37,7 @@ public:
     // Object Mgt.
     Vector(){
         // default constructor that creates a starting array
-        data_ptr = new int[CHUNK];
+        data_ptr = new T[CHUNK];
         capacity = CHUNK;
         n_elems = 0;
     }
@@ -45,7 +45,7 @@ public:
     Vector(const Vector &v){
     // Used to make a deep copy of the array
     capacity = v.capacity;
-    data_ptr = new int[capacity];
+    data_ptr = new T[capacity];
     n_elems = v.n_elems;
     for(int i = 0;i<v.n_elems;i++){
         data_ptr[i] = v.data_ptr[i];
@@ -57,7 +57,7 @@ public:
     // Basically the same thing as the copy constructor
     // Except return the pointer to this object
     capacity = v.capacity;
-    data_ptr = new int[capacity];
+    data_ptr = new T[capacity];
     n_elems = v.n_elems;
     for(int i = 0;i<v.n_elems;i++){
         data_ptr[i] = v.data_ptr[i];
@@ -73,7 +73,7 @@ public:
     // Accessors
 
     // Returns the front element
-    int front() const{
+    T front() const{
         // If array is empty throw an error
         if (n_elems == 0){
             throw std::range_error("Not valid index");
@@ -82,7 +82,7 @@ public:
         return data_ptr[0];
 
     };
-    int back() const{
+    T back() const{
         // If array is empty throw an error
         if (n_elems == 0){
             throw std::range_error("Not valid index");
@@ -90,7 +90,7 @@ public:
         // Return last element
         return data_ptr[n_elems - 1];
     };
-    int at(size_t pos) const{
+    T at(size_t pos) const{
         // Return element in position "pos"
         // If within valid index then return element at "pos"
         if(pos>=0 && pos<n_elems){
@@ -113,13 +113,13 @@ public:
     };
 
     // Mutators
-    int &operator[](size_t pos){
+    T &operator[](size_t pos){
         // Same as at but no bounds checking
         return data_ptr[pos];
     };
 
     // Append a new element at the end of the array
-    void push_back(int item){
+    void push_back(T item){
     // If element reaches capacity then grow the array then add element to back
     if(capacity==n_elems){
         grow();
@@ -164,13 +164,13 @@ public:
     };
     
     // Remove item in position pos and shuffles following items left
-    void insert(size_t pos, int item){ 
+    void insert(size_t pos, T item){ 
         // If new element reaches capacity grow the array
         if(capacity==n_elems){
             grow();
         }
         // Shuffle items right to make room for a new element
-        for(int i=n_elems;i>pos;i--){
+        for(int i = n_elems; i > pos; i--){
             data_ptr[i] = data_ptr[i-1];
         }
         // Add element at given position and increase n_elems
@@ -220,7 +220,7 @@ public:
         // return true
         if(this->capacity!=v.capacity)return false;
         if(this->n_elems!=v.n_elems)return false;
-        for(int i=0;i<n_elems;i++){
+        for(int i = 0; i < n_elems; i++){
             if(this->data_ptr[i]!=v.data_ptr[i])return false;
         }
         return true;

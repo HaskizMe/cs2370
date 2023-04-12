@@ -4,13 +4,23 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <list>
+#include <algorithm>
 using namespace std;
 
 // My global vectors
 vector<string> my_vector_customer_txt;
 vector<string> my_vector_items_txt;
+// vector<Item> items;
+// vector<Customer> customers;
+
+// My global list
+// list my_list;
+
 // customer class
-struct customer{
+class Customer
+{
+private:
     int customerid;
     string name;
     string street_address;
@@ -19,14 +29,212 @@ struct customer{
     string zip_code;
     string phone_number;
     string email_address;
-}customers;
+public:
+    Customer(int c_id, string n, string street, string c, string s, string z, string phone, string email)
+    {
+        customerid = c_id;
+        name = n;
+        street_address = street;
+        city = c;
+        state = s;
+        zip_code = z;
+        phone_number = phone;
+        email_address = email;
+    }
+    int get_id()
+    {
+        return customerid;
+    }
+    string get_name()
+    {
+        return name;
+    }
+    string print_detail()
+    {
+        return "Customer ID #" + to_string(customerid) + 
+        ":\n" + name + ", ph. " + phone_number + ", email: " + email_address + 
+        "\n" + street_address + 
+        "\n" + city + ", " + state + " " + zip_code;
+    };
+};
+
+vector<Customer> customers;
+
 
 // Item class
-struct item{
+class Item
+{
+private:
     int itemid;
     string description;
     float price;
-}items;
+public:
+    Item(int id, string des, float p)
+    {
+        itemid = id;
+        description = des;
+        price = p;
+    }
+
+    int get_id()
+    {
+        return itemid;
+    }
+    string get_description()
+    {
+        return description;
+    }
+    double get_price()
+    {
+        return price;
+    }
+};
+vector<Item> items;
+
+
+
+// Order class
+class Order
+{
+private:
+    int order_id;
+    string order_date;
+    int cust_id;
+    vector<Lineitem> line_items;
+    Payment* payment;
+public:
+    Order(int ord_id, string ord_date, int id, vector<Lineitem> li, Payment* p)
+    {
+        order_id = ord_id;
+        order_date = ord_date;
+        cust_id = id;
+        line_items = li;
+        payment = p;
+    }
+    double total() const
+    {
+        double total = 0;
+        for(int i = 0; i < line_items.size(); i++)
+        {
+            total += line_items[i].sub_total();
+        }
+        return total;
+    };
+    string print_order() const
+    {
+        string itemsStr = "Order Detail:";
+        for(int i = 0; i < line_items.size(); i++)
+        {
+            int item_id = line_items.at(i).item_id;
+            int item_index = find_item_idx(item_id);
+            string item_name = items.at(item_index).get_description();
+            double item_price = items.at(item_index).get_price();
+
+            itemsStr += "\n Item " + to_string(line_items.at(i).qty) + " @ " + dollarToString(item_price);
+        }
+        itemsStr += "\n";
+        int cust_indx = find_customer_idx(cust_id);
+        string cust_string = customers.at(cust_indx).print_detail();
+        stringstream ss;
+
+        ss << "======================" << "\nOrder #" << to_string(order_id) << ", Date: " << order_date << "\nAmount: $" << dollarToString(total()) << ", " << payment.print_detail() <<
+        return "";
+    };
+};
+
+class Lineitem
+{
+private:
+    int item_id;
+    int qty;
+public:
+    Lineitem(int id, int q)
+    {
+        item_id = id;
+        qty = q;
+    }
+    double sub_total() const
+    {
+        int item_indx = find_item_idx(item_id);
+        double item_price = items[item_indx].get_price();
+        return qty * item_price;
+    }
+
+    int get_id()
+    {
+        return item_id;
+    }
+    friend bool operator<(const Lineitem& item1, const Lineitem& item2)
+    {
+        return item1.item_id < item2.item_id;
+    }
+    friend class Order;
+};
+
+
+// Payment template
+class Payment
+{
+private:
+   double amount;
+public:
+    virtual string print_detail() const = 0;
+
+    friend class Order;
+};
+
+// Children class of payment
+class Credit: public Payment
+{
+private:
+    string card_number;
+    string expiration;
+public:
+    Credit(string cn, string exp)
+    {
+        card_number = cn;
+        expiration = exp;
+    }
+    string print_detail() const
+    { 
+        return "Paid by Credit Card " + card_number + ", exp. " + expiration; 
+    };
+};
+
+// Children class of payment
+class Paypal: public Payment
+{
+private:
+    string paypal_id;
+public:
+    Paypal(string id)
+    {
+        paypal_id = id;
+    }
+    string print_detail() const
+    {
+        return "Paid by Paypal ID: " + paypal_id; 
+    };
+};
+
+// Children class of payment
+class WireTransfer: public Payment
+{
+private:
+    string bank_id;
+    string account_id;
+public:
+    WireTransfer(string b_id, string acc)
+    {
+        bank_id = b_id;
+        account_id = acc;
+    }
+    string print_detail() const
+    {
+        return "Paid by Wire transfer from Bank ID " + bank_id + ", Account # " + account_id;
+    };
+};
+
 
 // Reading and storing all customers in a global vector
 void read_customers(string customers_file){
@@ -65,51 +273,48 @@ vector<string> read_items(string items_file){
 }
 
 // Creating item objects and storing them to a new vector
-vector<item> store_items(){
+void store_items(){
     // Creating a vector
-    vector<item> it_vect;
     // Looping through global vector and making new object
     for(int i = 0; i < my_vector_items_txt.size(); i++){
-        item obj_item;
         // Filling out information of each object attribute
         // by calling the split function and splitting by comma
-        obj_item.itemid = stoi(split(my_vector_items_txt[i],',').at(0));
-        obj_item.description = split(my_vector_items_txt[i],',').at(1);
-        obj_item.price = stof(split(my_vector_items_txt[i],',').at(2));
+        int itemid = stoi(split(my_vector_items_txt[i],',').at(0));
+        string description = split(my_vector_items_txt[i],',').at(1);
+        float price = stof(split(my_vector_items_txt[i],',').at(2));
         // Storing in vector
-        it_vect.push_back(obj_item);
+        Item obj_item(itemid, description, price);
+
+        items.push_back(obj_item);
     }
 
-    return it_vect; 
 }
 
 // Same thing as store_items just doing it with customers
-vector<customer> store_customers(){
+void store_customers(){
     // Creating a vector
-    vector<customer> c;
     // Looping through global vector and making new object
     for(int i = 0; i < my_vector_customer_txt.size(); i++){
-        customer obj;
         // Filling out information of each object attribute
         // by calling the split function and splitting by comma
-        obj.customerid = stoi(split(my_vector_customer_txt[i],',').at(0));
-        obj.name = split(my_vector_customer_txt[i],',').at(1);
-        obj.street_address = split(my_vector_customer_txt[i],',').at(2);
-        obj.city = split(my_vector_customer_txt[i],',').at(3);
-        obj.state = split(my_vector_customer_txt[i],',').at(4);
-        obj.zip_code = split(my_vector_customer_txt[i],',').at(5);
-        obj.phone_number = split(my_vector_customer_txt[i],',').at(6);
-        obj.email_address = split(my_vector_customer_txt[i],',').at(7);
+        int cid = stoi(split(my_vector_customer_txt[i],',').at(0));
+        string n = split(my_vector_customer_txt[i],',').at(1);
+        string street = split(my_vector_customer_txt[i],',').at(2);
+        string city = split(my_vector_customer_txt[i],',').at(3);
+        string state = split(my_vector_customer_txt[i],',').at(4);
+        string zip = split(my_vector_customer_txt[i],',').at(5);
+        string phone = split(my_vector_customer_txt[i],',').at(6);
+        string email = split(my_vector_customer_txt[i],',').at(7);
         // Storing in vector
-        c.push_back(obj);
+        Customer obj(cid, n, street, city, state, zip, phone, email);
+        customers.push_back(obj);
     }
-    return c;
 }
 
 // Returning true or false if custid is found
-bool custid_found(vector<customer> c, int num){
-    for(int i = 0; i < c.size(); i++){
-        if(c[i].customerid == num){
+bool custid_found(int num){
+    for(int i = 0; i < customers.size(); i++){
+        if(customers[i].get_id() == num){
             return true;
         }
     }
@@ -117,9 +322,9 @@ bool custid_found(vector<customer> c, int num){
 }
 
 // Same thing as custid_found but with items
-bool item_found(vector<item> item, int num){
-    for(int i = 0; i < item.size(); i++){
-        if(item[i].itemid == num){
+bool item_found(int item){
+    for(int i = 0; i < items.size(); i++){
+        if(items[i].get_id() == item){
             return true;
         }
     }
@@ -127,10 +332,10 @@ bool item_found(vector<item> item, int num){
 }
 
 // Returns the index of the item searched
-int find_item_idx(vector<item> item, int num){
+int find_item_idx(int num){
     int index;
-    for(int i = 0; i < item.size(); i++){
-        if(item[i].itemid == num){
+    for(int i = 0; i < items.size(); i++){
+        if(items[i].get_id() == num){
             index = i;
         }
     }
@@ -138,10 +343,10 @@ int find_item_idx(vector<item> item, int num){
 }
 
 // Same thing as find_item just with customer
-int find_customer_idx(vector<customer> customer, int num){
+int find_customer_idx(int num){
     int index;
-    for(int i = 0; i < customer.size(); i++){
-        if(customer[i].customerid == num){
+    for(int i = 0; i < customers.size(); i++){
+        if(customers[i].get_id() == num){
             index = i;
         }
     }
@@ -168,9 +373,6 @@ void print_order(vector<string> customer_orders_description, vector<float> custo
 
 // Printing and running for one customer's order
 void one_customer_order(){
-    // All my variables
-    vector<customer> cust;
-    vector<item> items;
     vector<string> customer_orders_description;
     vector<float> customer_orders_prices;
     int custid;
@@ -178,9 +380,10 @@ void one_customer_order(){
     int index;
     string name;
 
-    items = store_items();
-    cust = store_customers();
-
+    // items = store_items();
+    // cust = store_customers();
+    store_items();
+    store_customers();
     // Printing size of customers and size of items in file
     cout << "There are " << my_vector_customer_txt.size() << " customers." << endl;
     cout << "And there are " << my_vector_items_txt.size() << " items." << endl;
@@ -188,30 +391,28 @@ void one_customer_order(){
     // Asking for customer's id
     cin >> custid;
 
-    // Storing name of customer's id
-    name = cust.at(find_customer_idx(cust, custid)).name;
-
     // If custid is not found then exit program
-    if(!custid_found(cust, custid)){
+    if(!custid_found(custid)){
         cout << "Error: Customer id not found" << endl;
     }
     // Run a loop if custid is found
     else{
-    
+        // Storing name of customer's id
+        name = customers.at(find_customer_idx(custid)).get_name();
         do{
             cout << "Please enter an item number to purchase or enter 0 to exit" << endl;
             cin >> item_id;
 
             // If found then print out description and price with formatting
             // and store descriptions and price in seperate vectors
-            if(item_found(items, item_id)){
-                index = find_item_idx(items, item_id);
-                string description = items.at(index).description;
-                float price = items.at(index).price;
+            if(item_found(item_id)){
+                index = find_item_idx(item_id);
+                string description = items.at(index).get_description();
+                float price = items.at(index).get_price();
                 cout << "description: " << setw(description.length() + 3) << left << description << "|";
                 cout << setw(10) << right << " Price: $" << price << endl;
-                customer_orders_description.push_back(items.at(index).description);
-                customer_orders_prices.push_back(items.at(index).price);
+                customer_orders_description.push_back(items.at(index).get_description());
+                customer_orders_prices.push_back(items.at(index).get_price());
 
             }
             // If input is 0 then exit loop
@@ -230,10 +431,21 @@ void one_customer_order(){
 
     }
 }
+vector<Order*> orders (0);
+void read_orders(string orders){
+
+};
 
 
 int main() {
     read_customers("customers.txt");
     read_items("items.txt");
     one_customer_order();
+    // Order o;
+    // o.get_cust_id();
+    read_orders("orders.txt");
+
+    ofstream ofs("order_report.txt");
+    for (const auto& order: orders)
+        ofs << order.print_order() << endl;
 }
