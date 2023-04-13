@@ -6,7 +6,6 @@
 #include <iomanip>
 #include <list>
 #include <algorithm>
-#include<bits/stdc++.h>
 using namespace std;
 
 // My global vectors
@@ -103,12 +102,12 @@ public:
         item_id = id;
         qty = q;
     }
-    // double sub_total() const
-    // {
-    //     // int item_indx = find_item_idx(item_id);
-    //     double item_price = items[item_indx].get_price();
-    //     return qty * item_price;
-    // }
+    double sub_total() const
+    {
+        int item_indx = find_item_idx(item_id);
+        double item_price = items[item_indx].get_price();
+        return qty * item_price;
+    }
 
     int get_id()
     {
@@ -129,70 +128,50 @@ private:
     string order_date;
     int cust_id;
     vector<Lineitem> line_items;
-    // Payment* payment;
+    Payment* payment;
 public:
-    // Order(int ord_id, string ord_date, int id, vector<Lineitem> li, Payment* p)
-    Order(int ord_id, string ord_date, int id, vector<Lineitem> li)
-
+    Order(int ord_id, string ord_date, int id, vector<Lineitem> li, Payment* p)
     {
         order_id = ord_id;
         order_date = ord_date;
         cust_id = id;
         line_items = li;
-        // payment = p;
+        payment = p;
     }
-    Order(int ord_id, string ord_date, int id)
+    double total() const
     {
-        order_id = ord_id;
-        order_date = ord_date;
-        cust_id = id;
-    }
-    int get_orderid()
+        double total = 0;
+        for(int i = 0; i < line_items.size(); i++)
+        {
+            total += line_items[i].sub_total();
+        }
+        return total;
+    };
+    string print_order() const
     {
-        return order_id;
-    }
-    int get_custid()
-    {
-        return cust_id;
-    }
-    string get_order_date()
-    {
-        return order_date;
-    }
-    // double total() const
-    // {
-    //     double total = 0;
-    //     for(int i = 0; i < line_items.size(); i++)
-    //     {
-    //         total += line_items[i].sub_total();
-    //     }
-    //     return total;
-    // };
-    // string print_order() const
-    // {
-    //     string itemsStr = "Order Detail:";
-    //     for(int i = 0; i < line_items.size(); i++)
-    //     {
-    //         int item_id = line_items.at(i).item_id;
-    //         int item_index = find_item_idx(item_id);
-    //         string item_name = items.at(item_index).get_description();
-    //         double item_price = items.at(item_index).get_price();
+        string itemsStr = "Order Detail:";
+        for(int i = 0; i < line_items.size(); i++)
+        {
+            int item_id = line_items.at(i).item_id;
+            int item_index = find_item_idx(item_id);
+            string item_name = items.at(item_index).get_description();
+            double item_price = items.at(item_index).get_price();
 
-    //         itemsStr += "\n Item " + to_string(line_items.at(i).qty) + " @ " + dollar_to_string(item_price);
-    //     }
-    //     itemsStr += "\n";
-    //     int cust_indx = find_customer_idx(cust_id);
-    //     string cust_string = customers.at(cust_indx).print_detail();
-    //     stringstream ss;
+            itemsStr += "\n Item " + to_string(line_items.at(i).qty) + " @ " + dollar_to_string(item_price);
+        }
+        itemsStr += "\n";
+        int cust_indx = find_customer_idx(cust_id);
+        string cust_string = customers.at(cust_indx).print_detail();
+        stringstream ss;
 
-    //     ss << "======================" << "\nOrder #" << to_string(order_id) << ", Date: " << order_date << 
-    //     "\nAmount: $" << dollar_to_string(total()) << ", " << payment->print_detail() << "\n" << cust_string << "\n" << itemsStr;
+        ss << "======================" << "\nOrder #" << to_string(order_id) << ", Date: " << order_date << 
+        "\nAmount: $" << dollar_to_string(total()) << ", " << payment->print_detail() << "\n" << cust_string << "\n" << itemsStr;
 
-    //     return ss.str();
-    // }
+        return ss.str();
+    };
 };
 
-vector<Order> orders;
+vector<Order*> orders (0);
 
 // Payment template
 class Payment
@@ -269,7 +248,7 @@ void read_customers(string customers_file){
         while(getline (read_file, text)){
             my_vector_customer_txt.push_back(text);
         }
-        // store_customers();
+        store_customers();
     }
     else{
         cout << "File not found!" << endl;
@@ -287,7 +266,7 @@ void read_items(string items_file){
         while(getline (read_file, text)){
             my_vector_items_txt.push_back(text);
         }
-        // store_items();
+        store_items();
     }
     else{
         cout << "File not found!" << endl;
@@ -447,175 +426,85 @@ void one_customer_order(){
             }
 
         } while (item_id != 0);
-    }
-}
-    string store_order(vector<Lineitem> line_item)
-    {
-        vector<string> v;
-
-
-        return "string";
-    }
-
 
     // Call print order function
-    // print_order(customer_orders_description, customer_orders_prices, custid, name);
+    print_order(customer_orders_description, customer_orders_prices, custid, name);
 
-    // }
-void print_vec(vector<vector<string>> v)
-{
-    for (int i = 0; i < v.size(); i++)
-    {
-        for(int j = 0; j < v.at(i).size(); j++)
-        {
-            cout << v.at(i).at(j) << ", ";
-        }
     }
 }
 void read_orders(string filename){
-    vector<string> my_orders_txt;
     ifstream file(filename);
-    vector<string> items;
-    // vector<Lineitem> line_items;
-    vector<string> line;
-    vector<Lineitem> line_items;
-    vector<vector<string>> test;
-    vector<Payment*> payments;
-    vector<string> v;
-    string my_text;
-    int order_number;
-    int cust_id;
-    string order_date;
-    Payment* payment;
-    while(getline(file, my_text))
+    string str1, str2;
+    while(getline(file, str1) && getline(file, str2))
     {
-        my_orders_txt.push_back(my_text);
-    }
-    for(int i = 0; i < my_orders_txt.size(); i++)
-    {
-            // string item = split(my_orders_txt[0],',').at(3);
-            // cout << item << endl;
-        v = split(my_orders_txt[i], ',');
-        for(int j = 3; j < v.size(); j++)
+        vector<string> p1 = split(str1, ',');
+        vector<string> p2 = split(str2, ',');
+
+        int cust_id = stoi(p1.at(0));
+        int order_id = stoi(p1.at(1));
+        string order_date = p1.at(2);
+
+        vector<Lineitem> line_items;
+
+        for(int i = 0; i < p1.size(); i++)
         {
-            string item = split(my_orders_txt[i],',').at(j);
-            // cout << item << endl;
-            // line.push_back(stoi(split(item,'-').at(0)));
-            line.push_back(item);
-            // test.push_back(line);
-
-            // cout << line[i] << endl;
-            // line_items.push_back(Lineitem(stoi(split(item,'-').at(0)), stoi(split(item,'-').at(1))));
-            // line_items.push_back(Lineitem(line.at(i), line.at(i+1)));
-
+            vector<string> item_pieces = split(p1.at(i), '-');
+            line_items.push_back(Lineitem(stoi(item_pieces.at(0)), stoi(item_pieces.at(1))));
         }
-        // cout << line[18] << endl;
-        // test.push_back(line);
-        // cout << "---------------" << endl;
-        // line_items.push_back(line.at(i));
-        // print_vec(line);
-        // line_items.push_back(Lineitem(line.at(i), line.at(i+1)));
-        cust_id = stoi(split(my_orders_txt[i], ',').at(0));
-        order_number = stoi(split(my_orders_txt[i], ',').at(1));
-        order_date = split(my_orders_txt[i], ',').at(2);
-        // sort(line_items.begin(), line_items.end());
-
-        // orders.push_back(Order(order_number, order_date, cust_id, line_items));
-
-            i++;
-            if(split(my_orders_txt[i], ',').at(0) == "1")
-            {
-                // string credit_card = split(my_orders_txt[i], ',').at(0);
-                string card_number = split(my_orders_txt[i], ',').at(1);
-                // cout << i << endl;
-                string exp_date = split(my_orders_txt[i], ',').at(2);
-                payment = new Credit(card_number, exp_date);
-            }
-            else if(split(my_orders_txt[i], ',').at(0) == "2")
-            {
-                string paypal = split(my_orders_txt[i], ',').at(1);
-                payment = new Paypal(paypal);  
-            }
-            else if(split(my_orders_txt[i], ',').at(0) == "3")
-            {
-                string bank_id = split(my_orders_txt[i], ',').at(1);
-                string account_id = split(my_orders_txt[i], ',').at(1);
-                payment = new WireTransfer(bank_id, account_id);
-                // cout << payment->print_detail() << endl;
-            }
-            // orders.push_back(Order(order_number, order_date, cust_id, line_items, payment));
-            // orders.push_back(Order(order_number, order_date, cust_id, line_items));
-            // cout << line_items.size()<< endl;
-
-
-        // }
-
-
+    Payment* payment;
+    switch(p2.at(0).at(0))
+    {
+        case '1':
+            payment = new Credit(p2.at(1), p2.at(2));
+            break;
+        case '2':
+            payment = new Paypal(p2.at(1));
+            break;
+        case '3':
+            payment = new WireTransfer(p2.at(1), p2.at(2));
+            break;
+        default:
+            cout << "ERROR: default reached in read_order() switch statment" << endl;
     }
-            test.push_back(line);
-
-            // cout << line[18] << endl;
-
-            cout << test[608][1] << endl;
-
-            // cout << line.at(2) << endl;
-            // cout << line_items.at(5).get_id() << endl;
-
-            // cout << line_items.at(1).get_id() << endl;
-            // cout << payments.size() << endl;
-
-    // cout << orders.at(608).get_order_date() << endl;
-            // print_vec(test);
-
+    sort(line_items.begin(), line_items.end());
+    orders.push_back(new Order(order_id, order_date, cust_id, line_items, payment));
+    }
 };
 
-
-// string dollar_to_string(double dollar)
-// {
-//     string dollarStr = to_string(dollar);
-//     int decimal = dollarStr.find('.');
-//     if(decimal == string::npos)
-//     {
-//         dollarStr += ".00";
-//     }
-//     else
-//     {
-//         int missing = 3 - (dollarStr.size() - decimal);
-//         if(missing < 0)
-//         {
-//             dollarStr = to_string(dollar + .005);
-//             dollarStr = dollarStr.substr(0, dollarStr.size() + missing);
-//         }
-//         else
-//         {
-//             for(int i = 0; i < missing; i++)
-//             {
-//                 dollarStr += "0";
-//             }
-//         }
-//     }
-//     return dollarStr;
-// }
-
-vector<string> split(string str,   char* delimiter)
+string dollar_to_string(double dollar)
 {
-    vector<string> v;
-     char *token = strtok(const_cast<char*>(str.c_str()), delimiter);
-    while (token != nullptr)
+    string dollarStr = to_string(dollar);
+    int decimal = dollarStr.find('.');
+    if(decimal == string::npos)
     {
-        v.push_back(string(token));
-        token = strtok(nullptr, delimiter);
+        dollarStr += ".00";
     }
-   
-  return v;
+    else
+    {
+        int missing = 3 - (dollarStr.size() - decimal);
+        if(missing < 0)
+        {
+            dollarStr = to_string(dollar + .005);
+            dollarStr = dollarStr.substr(0, dollarStr.size() + missing);
+        }
+        else
+        {
+            for(int i = 0; i < missing; i++)
+            {
+                dollarStr += "0";
+            }
+        }
+    }
+    return dollarStr;
 }
+
+
 int main() {
-    // read_customers("customers.txt");
-    // read_items("items.txt");
-    // one_customer_order();
+    read_customers("customers.txt");
+    read_items("items.txt");
     read_orders("orders.txt");
 
-    // ofstream ofs("order_report.txt");
-    // for (const auto& order: orders)
-    //     ofs << order.print_order() << endl;
+    ofstream ofs("order_report.txt");
+    for (const auto& order: orders)
+        ofs << order->print_order() << endl;
 }
