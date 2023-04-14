@@ -168,28 +168,29 @@ public:
     //     }
     //     return total;
     // };
-    // string print_order() const
-    // {
-    //     string itemsStr = "Order Detail:";
-    //     for(int i = 0; i < line_items.size(); i++)
-    //     {
-    //         int item_id = line_items.at(i).item_id;
-    //         int item_index = find_item_idx(item_id);
-    //         string item_name = items.at(item_index).get_description();
-    //         double item_price = items.at(item_index).get_price();
+    string print_order() const
+    {
+        string itemsStr = "=========================\nOrder Detail: #" + order_id;
+        // for(int i = 0; i < line_items.size(); i++)
+        // {
+        //     int item_id = line_items.at(i).item_id;
+        //     int item_index = find_item_idx(item_id);
+        //     string item_name = items.at(item_index).get_description();
+        //     double item_price = items.at(item_index).get_price();
 
-    //         itemsStr += "\n Item " + to_string(line_items.at(i).qty) + " @ " + dollar_to_string(item_price);
-    //     }
-    //     itemsStr += "\n";
-    //     int cust_indx = find_customer_idx(cust_id);
-    //     string cust_string = customers.at(cust_indx).print_detail();
-    //     stringstream ss;
+        //     itemsStr += "\n Item " + to_string(line_items.at(i).qty) + " @ " + dollar_to_string(item_price);
+        // }
+        // itemsStr += "\n";
+        // int cust_indx = find_customer_idx(cust_id);
+        // string cust_string = customers.at(cust_indx).print_detail();
+        // stringstream ss;
 
-    //     ss << "======================" << "\nOrder #" << to_string(order_id) << ", Date: " << order_date << 
-    //     "\nAmount: $" << dollar_to_string(total()) << ", " << payment->print_detail() << "\n" << cust_string << "\n" << itemsStr;
+        // ss << "======================" << "\nOrder #" << to_string(order_id) << ", Date: " << order_date << 
+        // "\nAmount: $" << dollar_to_string(total()) << ", " << payment->print_detail() << "\n" << cust_string << "\n" << itemsStr;
 
-    //     return ss.str();
-    // }
+        // return ss.str();
+        return itemsStr;
+    }
 };
 
 vector<Order> orders;
@@ -472,6 +473,21 @@ void print_vec(vector<vector<string>> v)
         }
     }
 }
+
+
+void print_order1(vector<Order> order)
+{
+    // cout << order.size() << endl;
+    // cout << order.at(0).print_order();
+    // cout << order.at(1).get_custid() << endl;
+    // cout << order.at(2).get_custid() << endl;
+
+
+    for(int i = 0; i < order.size(); i++)
+    {
+        cout << order.at(i).print_order() << endl;
+    }
+}
 void read_orders(string filename){
     vector<string> my_orders_txt;
     ifstream file(filename);
@@ -505,12 +521,21 @@ void read_orders(string filename){
             // test.push_back(line);
 
             // cout << line[i] << endl;
-            // line_items.push_back(Lineitem(stoi(split(item,'-').at(0)), stoi(split(item,'-').at(1))));
+            line_items.push_back(Lineitem(stoi(split(item,'-').at(0)), stoi(split(item,'-').at(1))));
             // line_items.push_back(Lineitem(line.at(i), line.at(i+1)));
 
         }
-        // cout << line[18] << endl;
         // test.push_back(line);
+
+        // // cout << my_orders_txt.size() << endl;
+        // // cout << test.size() << endl;
+
+        // // string item2;
+        // item2 = test.at(i);
+        // line_items.push_back(Lineitem(stoi(split(item2,'-').at(0), stoi(split(item2,'-').at(1)))));
+        // line.clear();
+
+        // cout << line[18] << endl;
         // cout << "---------------" << endl;
         // line_items.push_back(line.at(i));
         // print_vec(line);
@@ -544,7 +569,8 @@ void read_orders(string filename){
                 // cout << payment->print_detail() << endl;
             }
             // orders.push_back(Order(order_number, order_date, cust_id, line_items, payment));
-            // orders.push_back(Order(order_number, order_date, cust_id, line_items));
+            // sort(line_items.begin(), line_items.end());
+            orders.push_back(Order(order_number, order_date, cust_id, line_items));
             // cout << line_items.size()<< endl;
 
 
@@ -552,18 +578,19 @@ void read_orders(string filename){
 
 
     }
-            test.push_back(line);
+            // test.push_back(line);
 
             // cout << line[18] << endl;
 
-            cout << test[608][1] << endl;
+            // cout << test[1][0] << endl;
 
             // cout << line.at(2) << endl;
             // cout << line_items.at(5).get_id() << endl;
 
             // cout << line_items.at(1).get_id() << endl;
             // cout << payments.size() << endl;
-
+            // cout << orders.size() << endl;
+    print_order1(orders);
     // cout << orders.at(608).get_order_date() << endl;
             // print_vec(test);
 
@@ -596,6 +623,8 @@ void read_orders(string filename){
 //     }
 //     return dollarStr;
 // }
+
+
 
 vector<string> split(string str,   char* delimiter)
 {
