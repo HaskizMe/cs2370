@@ -389,19 +389,6 @@ void print_order(vector<string> customer_orders_description, vector<float> custo
     cout << "total price: $" << total_price << endl;
 }
 
-
-void print_order1(vector<Order*> order)
-{
-    store_items();
-    // for (int i = 0; i < orders.size(); i++)
-    for (int i = 0; i < 2; i++)
-
-    {
-        // cout << order.at(i)->print_order() << endl;
-        
-    }
-
-}
 void read_orders(string filename){
     vector<string> my_orders_txt;
     ifstream file(filename);
@@ -431,7 +418,7 @@ void read_orders(string filename){
         cust_id = stoi(split(my_orders_txt[i], ',').at(0));
         order_number = stoi(split(my_orders_txt[i], ',').at(1));
         order_date = split(my_orders_txt[i], ',').at(2);
-        // sort(line_items.begin(), line_items.end());
+        sort(line_items.begin(), line_items.end());
 
 
             i++;
@@ -454,8 +441,7 @@ void read_orders(string filename){
             }
             orders.push_back(new Order(order_number, order_date, cust_id, line_items, payment));
     }
-    print_order1(orders);
-
+    store_items();
 };
 
 
