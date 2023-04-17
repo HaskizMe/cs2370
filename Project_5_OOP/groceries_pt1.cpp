@@ -12,9 +12,6 @@ using namespace std;
 vector<string> my_vector_customer_txt;
 vector<string> my_vector_items_txt;
 
-// My global list
-// list my_list;
-
 // customer class
 class Customer
 {
@@ -41,89 +38,6 @@ public:
     int itemid;
     string description;
     float price;   
-};
-
-
-// Order class
-class Order
-{
-    int order_id;
-    string order_date;
-    int cust_id;
-    vector<Lineitem> line_items;
-    Payment* payment;
-    Customer customer; 
-public:
-    double total()
-    {
-        return 0;
-    };
-    string print_order()
-    {
-        return "";
-    };
-};
-
-class Lineitem: public Item
-{
-    int item_id;
-    int qty;
-public:
-    double sub_total()
-    {
-        return 0;
-    };
-
-    // friend bool operator<(const LineItem& item1, const LineItem& item2) const 
-    // {
-    //     return item1.item_id < item2.item_id;
-    // }
-};
-
-
-// Payment template
-class Payment
-{
-   double amount;
-public:
-    virtual void print_detail() = 0;
-    //not sure if I should have this function
-    // int get_amount() { return amount; }
-};
-
-// Children class of payment
-class Credit: public Payment
-{
-    string cardNumber;
-    string expiration;
-public:
-    void print_detail() 
-    { 
-        cout << "credit() called"; 
-    };
-};
-
-// Children class of payment
-class Paypal: public Payment
-{
-    string paypal_id;
-public:
-    void print_detail()
-    {
-        cout << "paypal() called"; 
-    };
-};
-
-// Children class of payment
-class WireTransfer: public Payment
-{
-    string bank_id;
-    string account_id;
-public:
-    void print_detail()
-    {
-        cout << "WireTransfer() called";
-    };
 };
 
 
@@ -330,20 +244,10 @@ void one_customer_order(){
     }
 }
 
-void read_orders(string orders){
-
-};
 
 
 int main() {
     read_customers("customers.txt");
     read_items("items.txt");
     one_customer_order();
-    // Order o;
-    // o.get_cust_id();
-    // read_orders("orders.txt");
-
-    // ofstream ofs("order_report.txt");
-    // for (const auto& order: orders)
-    //     ofs << order.print_order() << endl;
 }
