@@ -1,0 +1,48 @@
+#include<iostream>
+#include<thread>
+using namespace std;
+
+void print1()
+{
+cout << "Starting of thread 1:\n";
+for(int i=1; i<=5; i++)
+{
+cout<<i<<endl;
+
+}
+cout << "Ending of thread 1\n";
+}
+void print2()
+{ cout << "Starting of thread 2:\n";
+for(int i=6; i<=10; i++)
+{
+cout<<i<<endl;
+
+}
+cout << "Ending of thread 2\n";
+}
+
+void print3()
+{ cout << "Starting of thread 3:\n";
+for(int i=11; i<=15; i++)
+{
+cout<<i<<endl;
+
+}
+cout << "Ending of thread 3\n";
+}
+
+int main()
+{
+//creating 3 threads (t1, t2 & t3) and associating functions with each thread
+thread t1(print1);
+thread t2(print2);
+thread t3(print3);
+
+t1.join(); // pauses until t1 finishes
+t2.join(); // pauses until t2 finishes
+t3.join(); // pauses until t3 finishes
+
+return 0;
+}
+
