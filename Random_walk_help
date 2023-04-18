@@ -1,0 +1,251 @@
+from turtle import *
+import random
+import math
+tracer(False)
+import statistics
+bgcolor("skyblue")
+turns = [0,90,180,270]
+Regs = [0,180]
+
+
+def Go_Home():
+"""This is just to eliminate common code"""
+stamp()
+penup()
+home()
+setheading(0)
+
+def code(steps, runs, walk, nums):
+"""This is the function that calculates the numbers
+and plots the picture, depending on the arguements passed in"""
+Pas_Num = []
+Mi_Ma_Num = []
+Reg_Num = []
+for _ in range(runs):
+for _ in range(steps):
+if walk == "Reg":
+left(random.choice(Regs))
+penup()
+if nums == "yes":
+forward(1)
+else:
+forward(9)
+elif walk == "Pa":
+left(random.choice(turns))
+penup()
+if nums == "yes":
+forward(1)
+else:
+forward(9)
+elif walk == "MiMa":
+left(random.choice(turns))
+if heading() == 270:
+penup()
+if nums == "yes":
+forward(2)
+else:
+forward(18)
+else:
+penup()
+if nums == "yes":
+forward(1)
+else:
+forward(9)
+
+
+if walk == "Reg":
+if nums == "yes":
+Reg_Num.append(distance(0,0))
+home()
+setheading(0)
+else:
+pendown()
+setheading(0)
+color("red")
+shape("triangle")
+Go_Home()
+elif walk == "Pa":
+if nums == "yes":
+Pas_Num.append(distance(0,0))
+home()
+setheading(0)
+else:
+pendown()
+color("black")
+shape("circle")
+Go_Home()
+elif walk == "MiMa":
+if nums == "yes":
+Mi_Ma_Num.append(distance(0,0))
+home()
+setheading(0)
+else:
+pendown()
+color("green")
+shape("square")
+Go_Home()
+if walk == "Pa" and nums == "yes":
+print(f"Pa random walk of {steps} steps")
+print(f"Mean = {round(statistics.mean(Pas_Num), 1)} CV = {round(statistics.stdev(Pas_Num),1)}")
+print(f"Max = {round(max(Pas_Num),1)} Min = {round(min(Pas_Num),1)}\n")
+elif walk == "MiMa" and nums == "yes":
+print(f"Mi-Ma random walk of {steps} steps")
+print(f"Mean = {round(statistics.mean(Mi_Ma_Num),1)} CV = {round(statistics.stdev(Mi_Ma_Num),1)}")
+print(f"Max = {round(max(Mi_Ma_Num),1)} Min = {round(min(Mi_Ma_Num),1)}\n")
+elif walk == "Reg" and nums == "yes":
+print(f"Reg random walk of {steps} steps")
+print(f"Mean = {round(statistics.mean(Reg_Num),1)} CV = {round(statistics.stdev(Reg_Num),1)}")
+print(f"Max = {round(max(Reg_Num),1)} Min = {round(min(Reg_Num),1)}\n")
+
+
+def Main():
+"""This is the main function that calls the funcion"""
+code(100, 50, "Pa", "no")
+code(100, 50, "Pa", "yes")
+code(1000, 50, "Pa", "yes")
+code(100, 50, "MiMa", "no")
+code(100, 50, "MiMa", "yes")
+code(1000, 50, "MiMa", "yes")
+code(100, 50, "Reg", "no")
+code(100, 50, "Reg", "yes")
+code(1000, 50, "Reg", "yes")
+
+
+if __name__ == "__main__":
+Main()
+
+
+
+
+
+
+
+
+import statistics as stat
+from random import seed, choice
+from math import hypot
+from turtle import *
+
+#Turtle objects:
+pa = Turtle()
+mima = Turtle()
+reg = Turtle()
+
+pa.color('red')
+mima.color('blue')
+reg.color('green')
+
+
+def set_seed(value):
+""" This function is used to set the seed for testing.
+When testing, this function needs to be called BEFORE main is called
+or any of function that uses random numbers.
+"""
+seed(value)
+
+
+def main():
+numSteps = int(input("enter the number of steps: "))
+numTrials = int(input("enter the number of trials: "))
+
+paDist = []
+mimaDist = []
+regDist = []
+
+for i in range(numTrials):
+
+paWalk = walk(numSteps,'pa')
+mimaWalk = walk(numSteps,'mima')
+regWalk = walk(numSteps,'reg')
+
+paDist.append(abs(paWalk[0]) + abs(paWalk[1]))
+mimaDist.append(abs(mimaWalk[0]) + abs(mimaWalk[1]))
+regDist.append(abs(regWalk[0]) + abs(regWalk[1]))
+
+pa.up()
+mima.up()
+reg.up()
+
+pa.goto(walk(100, 'pa'))
+mima.goto(walk(100, 'mima'))
+reg.goto(walk(100, 'reg'))
+
+pa.dot()
+mima.dot()
+reg.dot()
+
+#Once again, there is probably a more efficeint way to handle this output
+#CV is the ratio of the average and the standard deviation
+print("Pa random walk of ", numSteps)
+print("Mean: ", avg(paDist))
+print("Max: ", max(paDist))
+print("Min: ", min(paDist))
+print("CV: ", ( avg(paDist)/stat.stdev(paDist) ) )
+
+print("Mima random walk of ", numSteps)
+print("Mean: ", avg(mimaDist))
+print("Max: ", max(mimaDist))
+print("Min: ", min(mimaDist))
+print("CV: ", ( avg(paDist)/stat.stdev(paDist) ) )
+
+print("Reg random walk of ", numSteps)
+print("Mean: ", avg(regDist))
+print("Max: ", max(regDist))
+print("Min: ", min(regDist))
+print("CV: ", ( avg(paDist)/stat.stdev(paDist) ) )
+
+
+def walk(num_steps, walker):
+x = 0
+y = 0
+direction = ''
+
+#Pick a random direction and step that way "number" times
+for i in range(num_steps):
+direction = choice(['north','south','east','west'])
+if direction == 'north':
+y += 1
+elif direction == 'south':
+y -= 1
+elif direction == 'east':
+x += 1
+else: #West is all that's left
+x -= 1
+#Conditions for each walk type besides pa (default)
+if walker == 'mima':
+if direction == 'south':
+y -= 1
+if walker == 'reg':
+if direction == 'north' or direction == 'south':
+#go east or west the same number instead of n or s; set y back to 0
+x += y
+y = 0
+
+#return the x,y coordinates
+# pass
+return (x,y)
+
+def avg(inValues):
+
+average = 0
+valuesTotal = 0
+
+#Looks like Python 3 doesn't support index() for dictionaries?
+valuesList = list(inValues)
+
+#find the index of the last value + 1 (index starts at 0)
+numValues = valuesList.index(valuesList[-1]) + 1
+
+#add the values
+for index, i in enumerate(inValues, 1):
+valuesTotal += i
+
+average = valuesTotal/numValues
+
+return average
+
+if name == "__main__":
+set_seed(20190101)
+main()
+
+input("press any key to continue...")
