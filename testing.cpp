@@ -1,15 +1,30 @@
-#include <vector>
 #include <iostream>
-#include <fstream>
+#include <set>
 #include <string>
-#include <iomanip>
-#include <list>
-#include <algorithm>
 using namespace std;
+
 int main() {
-    vector<string> my_vector_items_txt;
-    my_vector_items_txt.push_back("hello");
-    cout << my_vector_items_txt.at(0) << endl;
-    cout << "Hello World!";
-    return 0;
+   set<string> groceries;
+   string userInput;
+
+   groceries.insert("bananas");
+   groceries.insert("noodles");
+   groceries.insert("soda");
+   groceries.insert("apples");
+   groceries.insert("ham");
+
+   cin >> userInput;
+   while (userInput != "done") {
+      if (groceries.erase(userInput)) {
+            cout << "e" << endl;
+      }
+      else {
+            cout << "n" << endl;
+      }
+      cin >> userInput;
+   }
+
+   cout << "Size: " << groceries.size() << endl;
+
+   return 0;
 }
