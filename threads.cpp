@@ -30,9 +30,9 @@ bool is_prime(int n) {
 
 void find_primes(int thread_id) {
     int num = thread_id + 2;
-    while (num <= 1000000) {
+    while (num <= 2000000) {
         if (is_prime(num)) {
-            lock_guard<std::mutex> lock(mtx);  // lock the mutex
+            lock_guard<mutex> lock(mtx);  // lock the mutex
             ofstream out("primes.dat", std::ios::app);
             out << num << "\n";  // write to file
             out.close();
@@ -46,7 +46,7 @@ void find_primes(int thread_id) {
 int main() {
     ofstream out("primes.dat");
     out.close();  // create an empty file
-    vector<std::thread> threads;
+    vector<thread> threads;
     for (int i = 0; i < 4; i++) {
         threads.emplace_back(find_primes, i);  // create and start threads
     }
@@ -55,7 +55,7 @@ int main() {
     }
     cout << "Total primes found: " << total_primes << "\n";
     for (int i = 0; i < 4; i++) {
-        cout << "Thread " << i << " found " << primes_per_thread[i] << " primes\n";
+        cout << "Thread " << i+1 << " found " << primes_per_thread[i] << " primes\n";
     }
     return 0;
 }
